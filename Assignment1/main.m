@@ -66,11 +66,42 @@ title('P9 x^2-y^2/4=1');
 
 %HW1 p10
 figure;
-x=0:0.1:10
-y = 2*x
+x=0:0.1:10;
+y = 2*x;
 plot(x,y,'.');
 title('P10 2x-y=0')
 
 %HW1 p11
 figure;
-x = -2:0.08:2
+x = -2:0.08:2;
+py = sqrt(4-x.^2);
+ny = -1* sqrt(4-x.^2);
+plot([x x],[py ny],'.k');
+title('P11 x^2+y^2=4');
+
+%HW1 P12
+figure;
+x = -2:0.08:2;
+plot(x,sqrt(1-x.^2/4),'b.');
+hold on;
+plot(x,-1*sqrt(1-x.^2/4),'b.');
+hold off;
+title('P12 x^2/4+y^2=1');
+
+%HW1 P13
+figure;
+x = -1:0.02:1;
+y = 1./x;
+plot(x,y,'b.');
+title('P13 xy = 1');
+
+%HW1 P14
+figure;
+i = 0:1:96;
+theta = i.*pi/16;
+r = 6.5*(104-i)/104;
+plot(r.*sin(theta),r.*cos(theta),'ro');
+hold on;
+plot(-1*r.*sin(theta),-1*r.*cos(theta),'b*');
+hold off;
+title('P14');
