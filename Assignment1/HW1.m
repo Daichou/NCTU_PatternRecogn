@@ -64,3 +64,19 @@ figure;
 ezplot('x^2-y^2/4-1')
 title('P9 x^2-y^2/4=1');
 
+%HW1 p10
+figure;
+x=0:0.1:10
+y = 2*x
+plot(x,y,'.');
+title('P10 2x-y=0')
+
+%HW1 p11
+figure;
+x = -2:0.08:2;
+py = sqrt(4-x.^2);
+ny = -1* sqrt(4-x.^2);
+plot([x x],[py ny],'.k');
+title('P11 x^2+y^2=4');
+
+%HW1 P12
