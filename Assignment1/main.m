@@ -145,12 +145,13 @@ r_y = r_r_radius.*cos(r_theta)+r_cen(2);
 plot(r_x,r_y,'r.')
 title('P16 2 moon')
 %HW1 P17
-x=0:0.05:4*pi;
+x=0:0.01:pi;
 for i = 1:5
-    y_plot=sin(x*pi/i);
+    y_plot=sin(x*pi*i);
     plot(x,y_plot,'.k');
-    axis([0,4*pi,-1.2,1.2]);
+    axis([0,pi,-1.2,1.2]);
     title(strcat('P17 T/',num2str(i)))
     pause(5);
 end
+
 
