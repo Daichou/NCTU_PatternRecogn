@@ -105,3 +105,52 @@ hold on;
 plot(-1*r.*sin(theta),-1*r.*cos(theta),'b*');
 hold off;
 title('P14');
+
+%HW1 P15
+figure;
+x = [0 0 1 1 0 1 1 0];
+y = [1 0 0 0 0 1 1 1];
+z = [1 0 0 1 1 0 1 0];
+classes = [1 2 2 2 1 2 1 1];
+plot3(x(classes == 1),y(classes==1),z(classes==1),'bo');
+hold on;
+plot3(x(classes == 2),y(classes==2),z(classes==2),'rx');
+grid on;
+hold on;
+x = 0:1:1;
+y = 0:1:1;
+[X,Y] = meshgrid(x,y);
+Z = X - Y + 0.5;
+surf(X,Y,Z)
+hold off;
+
+%HW1 P16
+figure;
+b_cen = [0,0];
+b_l_radius = 10;
+b_s_radius = 6;
+b_theta = 1*pi*rand(1000,1)-0.5*pi;
+b_r_radius = (b_l_radius - b_s_radius)*rand(1000,1) + b_s_radius;
+b_x = b_r_radius.*sin(b_theta)+b_cen(1);
+b_y = b_r_radius.*cos(b_theta)+b_cen(2);
+plot(b_x,b_y,'b.')
+hold on;
+r_cen = [9,0];
+r_l_radius = 10;
+r_s_radius = 6;
+r_theta = 1*pi*rand(1000,1)+0.5*pi;
+r_r_radius = (r_l_radius - r_s_radius)*rand(1000,1) + r_s_radius;
+r_x = r_r_radius.*sin(r_theta)+r_cen(1);
+r_y = r_r_radius.*cos(r_theta)+r_cen(2);
+plot(r_x,r_y,'r.')
+title('P16 2 moon')
+%HW1 P17
+x=0:0.05:4*pi;
+for i = 1:5
+    y_plot=sin(x*pi/i);
+    plot(x,y_plot,'.k');
+    axis([0,4*pi,-1.2,1.2]);
+    title(strcat('P17 T/',num2str(i)))
+    pause(5);
+end
+
