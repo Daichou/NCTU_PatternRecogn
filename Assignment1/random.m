@@ -1,6 +1,8 @@
 s1 = uint64(datenum(datetime)+cputime*1000)
 s2 = uint64(datenum(datetime)+cputime*1000)
 c = []
+lower_bound = 0.0;
+upper_bound = 1.0;
 for i = 1:100
     x = uint64(s1);
     y = uint64(s2);
@@ -16,6 +18,7 @@ for i = 1:100
     final = double(ans/bot);
     c = cat(1,c,final);
 end
+c = c.*(upper_bound-lower_bound)+lower_bound;
 histogram(c,100);
 a=0; % lower boundary
 b=1; % higher boundary

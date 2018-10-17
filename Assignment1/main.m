@@ -143,8 +143,10 @@ r_r_radius = (r_l_radius - r_s_radius)*rand(1000,1) + r_s_radius;
 r_x = r_r_radius.*sin(r_theta)+r_cen(1);
 r_y = r_r_radius.*cos(r_theta)+r_cen(2);
 plot(r_x,r_y,'r.')
+hold off;
 title('P16 2 moon')
 %HW1 P17
+figure;
 x=0:0.01:pi;
 for i = 1:5
     y_plot=sin(x*pi*i);
@@ -153,5 +155,28 @@ for i = 1:5
     title(strcat('P17 T/',num2str(i)))
     pause(5);
 end
+%HW1 P18
+figure;
+s1 = uint64(datenum(datetime)+cputime*1000)
+s2 = uint64(datenum(datetime)+cputime*1000)
+c = []
+lower_bound = 0.0;
+upper_bound = 1.0;
+for i = 1:100
+    x = uint64(s1);
+    y = uint64(s2);
+    s1 = y;
+    x = bitxor(x,bitshift(x,32,'uint64'),'uint64');
 
+    s2 = bitxor(bitxor(bitxor(x,y,'uint64'),bitshift(x,-17,'uint64'),'uint64'),bitshift(y,-26,'uint64'),'uint64');
+    ans = double(s2) + double(y);
+    if (ans > 2^64-1)
+       ans = ans - 2^64+1;
+    end
+    bot = double(2^64-1);
+    final = double(ans/bot);
+    c = cat(1,c,final);
+end
+c = c.*(upper_bound-lower_bound)+lower_bound;
+histogram(c,100);
 
