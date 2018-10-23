@@ -1,4 +1,4 @@
-
+figure;
 x=0:0.01:pi;
 for i = 1:5
     y_plot=sin(x*pi*i);
