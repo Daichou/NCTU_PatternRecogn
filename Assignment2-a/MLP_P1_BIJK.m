@@ -22,9 +22,9 @@ data(98:98+96,4) = 1;
 % B = 2+1; % I=3+1;% J=3+1;% K=2;
 nvectors=97+97;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=5;
+neuron_hid_layerJ=200;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=5;
+neuron_hid_layerI=200;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
 noutdim=2;
 
@@ -33,9 +33,9 @@ wkj = randn(noutdim,neuron_hid_layerI_with_bias);
 wkj_tmp = zeros(size(wkj));
 wji = randn(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
 wib = randn(neuron_hid_layerI_with_bias,ninpdim_with_bias);
-olddelwkj=zeros(2*4); % weight of Wkj (J -> K)
-olddelwji=zeros(3*3);   % weight of Wji (I -> J)
-olddelwib=zeros(3*3);   % weight of Wji (I -> J)
+olddelwkj=zeros(noutdim,neuron_hid_layerI_with_bias); % weight of Wkj (J -> K)
+olddelwji=zeros(neuron_hid_layerI_with_bias,neuron_hid_layerJ_with_bias);   % weight of Wji (I -> J)
+olddelwib=zeros(neuron_hid_layerJ_with_bias,ninpdim_with_bias);   % weight of Wji (I -> J)
 ob = zeros(ninpdim_with_bias,1);
 ob(ninpdim_with_bias) = 1;       % output of data
 si = zeros(ninpdim_with_bias,1);       % input of hidden layer i
@@ -50,8 +50,8 @@ dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.02;
 itermax=20000;
-eta=0.7;            % (n -> eta -> learning rate)
-beta=0.3;           % momentum term
+eta=0.9;            % (n -> eta -> learning rate)
+beta=0.1;           % momentum term
  
 iter=0;
 error_avg=10;
