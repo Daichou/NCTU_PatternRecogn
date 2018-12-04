@@ -54,7 +54,7 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=20000;
+itermax=100000;
 eta=0.9;            % (n -> eta -> learning rate)
 beta=0.1;           % momentum term
  
