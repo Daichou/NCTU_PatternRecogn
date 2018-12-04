@@ -16,11 +16,11 @@ data(98:98+96,4) = 1;
 % A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=2;
+neuron_hid_layerJ=200;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=2;
+neuron_hid_layerI=200;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=2;
+neuron_hid_layerB=200;
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
 
@@ -30,10 +30,10 @@ wkj_tmp = zeros(size(wkj));
 wji = randn(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
 wib = randn(neuron_hid_layerI_with_bias,neuron_hid_layerB_with_bias);
 wba = randn(neuron_hid_layerB_with_bias,ninpdim_with_bias);
-olddelwkj=zeros(noutdim * neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)
-olddelwji=zeros(neuron_hid_layerJ_with_bias * neuron_hid_layerI_with_bias);   % weight of Wji (I -> J)
-olddelwib=zeros(neuron_hid_layerB_with_bias * neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
-olddelwba=zeros(neuron_hid_layerB_with_bias * ninpdim_with_bias);   % weight of Wji (A -> B)
+olddelwkj=zeros(noutdim , neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)
+olddelwji=zeros(neuron_hid_layerJ_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (I -> J)
+olddelwib=zeros(neuron_hid_layerB_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
+olddelwba=zeros(neuron_hid_layerB_with_bias , ninpdim_with_bias);   % weight of Wji (A -> B)
 oa = zeros(ninpdim_with_bias,1);
 oa(ninpdim_with_bias) = 1;
 
@@ -54,7 +54,7 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=20;
+itermax=20000;
 eta=0.9;            % (n -> eta -> learning rate)
 beta=0.1;           % momentum term
  
