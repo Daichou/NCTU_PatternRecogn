@@ -57,6 +57,8 @@ iter=0;
 error_avg=10;
  
  
+title_text = sprintf('BIJK:%d X %d X %d X %d \n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
+file_text = sprintf('P1_BIJK_%dX%dX%dX%d_iter_%d_eta_%f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
 % internal variables
 deltak = zeros(1,noutdim);
 deltaj = zeros(1,neuron_hid_layerJ_with_bias);
@@ -137,11 +139,15 @@ while (error_avg > Lowerlimit) && (iter<itermax)
     error_r(iter)=error_avg;
 end
  
- 
-figure;
+fig_error = figure(1);
 hold on;
 plot(ite, error_r);
- 
+title(title_text);
+xlabel('iteration');
+ylabel('error');
+saveas(fig_error,strcat(file_text,'_error.jpg'));
+saveas(fig_error,strcat(file_text,'_error.fig'));
+fig_decision = figure(2);
 figure;
 hold on;
 for n=1:1:97
@@ -183,3 +189,9 @@ for ix=-60:1:61
     end
 end
 
+title(title_text);
+xlabel('iteration');
+ylabel('error');
+
+saveas(fig_decision,strcat(file_text,'_decision.jpg'));
+saveas(fig_decision,strcat(file_text,'_decision.fig'));
