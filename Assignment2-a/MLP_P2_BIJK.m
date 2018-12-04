@@ -22,9 +22,9 @@ data(N+1:2*N,4) = 1;
 % B = 2+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=3;
+neuron_hid_layerJ=5;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=3;
+neuron_hid_layerI=5;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
 noutdim=2;
 
