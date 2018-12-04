@@ -67,8 +67,8 @@ beta=0.3;           % momentum term
 iter=0;
 error_avg=10;
 
-title_text = sprintf('P2 ABIJK:%d X %d X %d X %d \n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerB,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
-file_text = sprintf('P2_ABIJK_%dX%dX%dX%d_iter_%d_eta_%f',ninpdim_with_bias,neuron_hid_layerB,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
+title_text = sprintf('P2 ABIJK:%d X %d X %d X %d X %d\n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerB,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
+file_text = sprintf('P2_ABIJK_%dX%dX%dX%dX%d_iter_%d_eta_%f',ninpdim_with_bias,neuron_hid_layerB,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
 
 % internal variables
 deltak = zeros(1,noutdim);
@@ -228,4 +228,4 @@ ylabel('error');
 
 saveas(fig_decision,strcat(file_text,'_decision.jpg'));
 saveas(fig_decision,strcat(file_text,'_decision.fig'));
-:
+
