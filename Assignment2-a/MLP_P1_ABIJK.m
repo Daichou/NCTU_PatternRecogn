@@ -1,32 +1,26 @@
-% Appendix K: Matlab Program of Multilayer Perceptron
- 
-% 15k_Appendix_K_mlpKY3_modify.m
-% The program is written by Kou-Yuan Huang
- 
 clear all;
+N=97;
+i = 0:1:96;
+theta = i.*pi/16;
+r = 6.5*(104-i)/104;
 
-N=250;
-theta1 = linspace(-180,180, N)*pi/360;
-r = 8
-
-data(1:N,1) = -5 + r*sin(theta1)+randn(1,N);
-data(1:N,2) = r*cos(theta1)+randn(1,N);
-data(1:N,3) = 1;
+data(1:97,1) = r.*sin(theta);
+data(1:97,2) = r.*cos(theta);
+data(1:97,3) = 1;
 data(1:97,4) = 0;
 
-data(N+1:2*N,1) = 5 + r*sin(theta1)+randn(1,N);
-data(N+1:2*N,2) = -r*cos(theta1)+randn(1,N);
-data(N+1:2*N,3) = 0;
-data(N+1:2*N,4) = 1;
-
+data(98:98+96,1) = -1*r.*sin(theta);
+data(98:98+96,2) = -1*r.*cos(theta);
+data(98:98+96,3) = 0;
+data(98:98+96,4) = 1;
 % A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=7;
+neuron_hid_layerJ=50;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=7;
+neuron_hid_layerI=50;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=7;
+neuron_hid_layerB=50;
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
 
@@ -61,8 +55,8 @@ dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
 itermax=20000;
-eta=0.7;            % (n -> eta -> learning rate)
-beta=0.3;           % momentum term
+eta=0.9;            % (n -> eta -> learning rate)
+beta=0.1;           % momentum term
  
 iter=0;
 error_avg=10;
@@ -179,8 +173,8 @@ end
  
 for ix=-30:1:31
     for iy=-30:1:31
-        dx=0.5*(ix-1); 
-        dy=0.5*(iy-1);
+        dx=0.2*(ix-1); 
+        dy=0.2*(iy-1);
         oa=[dx dy 1]';
  
         for j=1:neuron_hid_layerB
