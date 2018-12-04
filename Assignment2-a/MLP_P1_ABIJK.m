@@ -16,11 +16,11 @@ data(98:98+96,4) = 1;
 % A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=120;
+neuron_hid_layerJ=2;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=120;
+neuron_hid_layerI=2;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=120;
+neuron_hid_layerB=2;
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
 
@@ -54,13 +54,14 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=20000;
+itermax=20;
 eta=0.9;            % (n -> eta -> learning rate)
 beta=0.1;           % momentum term
  
 iter=0;
 error_avg=10;
 
+title_text = sprintf('ABIJK:%d X %d X %d X %d X %d \n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerB,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
 
 % internal variables
 deltak = zeros(1,noutdim);
@@ -161,7 +162,9 @@ end
 figure;
 hold on;
 plot(ite, error_r);
- 
+title(title_text);
+xlabel('iteration');
+ylabel('error');
 figure;
 hold on;
 for n=1:1:N
@@ -208,4 +211,7 @@ for ix=-30:1:31
         end
     end
 end
+title(title_text);
+xlabel('iteration');
+ylabel('error');
 
