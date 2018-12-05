@@ -44,7 +44,7 @@ data(3*N+1:4*N,6) = 1;
 % I=2+1;% J=3+1;% K=2;
 nvectors=N*4;
 ninpdim1=3;
-nhid=10;
+nhid=7;
 nhid1=nhid+1;
 noutdim=4;
 
@@ -68,7 +68,7 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
  
 Lowerlimit=0.02;
-itermax=200;
+itermax=20000;
 eta=0.7;            % (n -> eta -> learning rate)
 beta=0.3;           % momentum term
  
