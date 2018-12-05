@@ -44,7 +44,7 @@ data(3*N+1:4*N,6) = 1;
 % I=2+1;% J=3+1;% K=2;
 nvectors=N*4;
 ninpdim1=3;
-nhid=7;
+nhid=5;
 nhid1=nhid+1;
 noutdim=4;
 
