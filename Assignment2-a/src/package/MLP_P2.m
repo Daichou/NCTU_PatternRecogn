@@ -18,17 +18,17 @@ x_input = [data(:,1) data(:,2)];
 y_output = [data(:,3) data(:,4)];
 x_input = x_input.';
 y_output = y_output.';
-net = feedforwardnet([3 7 3]);
+net = feedforwardnet([2 2]);
 net.trainParam.lr = 0.2;
 net.trainParam.epochs = 10000;
 net.trainParam.goal = 0.001;
 net = train(net,x_input,y_output);
 view(net);
 
-title_text = sprintf('P2: 2X3X7X3X2\n lr = %d, epochs = %f', net.trainParam.lr, net.trainParam.epochs);
-file_text = sprintf('P2_2X3X7X3X2_lr_%d_epochs_%f', net.trainParam.lr, net.trainParam.epochs);
+title_text = sprintf('P2: 2X2X2X2\n lr = %d, epochs = %f', net.trainParam.lr, net.trainParam.epochs);
+file_text = sprintf('P2_2X2X2X2_lr_%d_epochs_%f', net.trainParam.lr, net.trainParam.epochs);
 
-figure;
+fig_decision = figure(1);
 hold on;
 for n=1:1:N
     plot(data(n,1), data(n,2),'r o');
