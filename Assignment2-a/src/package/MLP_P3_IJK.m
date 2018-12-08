@@ -69,8 +69,8 @@ dk = zeros(noutdim,1);        % desired output
  
 Lowerlimit=0.02;
 itermax=20000;
-eta=0.003;            % (n -> eta -> learning rate)
-beta=0.003;           % momentum term
+eta=0.7;            % (n -> eta -> learning rate)
+beta=0.3;           % momentum term
  
 iter=0;
 error_avg=10;
@@ -95,48 +95,49 @@ while (error_avg > Lowerlimit) && (iter<itermax)
         dk=[data(ivector,3) data(ivector,4) data(ivector,5) data(ivector,6)]';
         for j=1:nhid
             sj(j)=wji(j,:)*oi;
-            oj(j)=max(sj(j),0);    % ReLu
+            oj(j)=1/(1+exp(-sj(j)));    % sigmoid
         end
         oj(nhid1)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=max(sk(k),0);    % ReLu
+            ok(k)=1/(1+exp(-sk(k)));    % signmoid
         end
+        
         %error=error+ (dk-ok)' *(dk-ok)/2;
         error=error+sum(abs(dk-ok)); % abs is absolute each element
- 
+        
 % Backward learning:
-
+ 
          for k=1:noutdim
-            deltak(k)=(dk(k)-ok(k))*(ok(k) > 0); % gradient term
+            deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)); % gradient term
          end
-
+ 
          for j=1:nhid1
             for k=1:noutdim
                wkj_tmp(k,j)=wkj(k,j)+eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
                olddelwkj(k,j)=eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
             end
          end
-
+ 
          for j=1:nhid
             sumback(j)=0.0;
             for k=1:noutdim
                sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
             end
-            deltaj(j)=(oj(j) > 0)*sumback(j);
+            deltaj(j)=oj(j)*(1.0-oj(j))*sumback(j);
          end
-
-
+ 
+ 
          for i=1:ninpdim1
             for j=1:nhid
                wji(j,i)=wji(j,i)+eta*deltaj(j)*oi(i)+beta*olddelwji(j,i);
                olddelwji(j,i)=eta*deltaj(j)*oi(i)+beta*olddelwji(j,i);
             end
          end
-
+         
          wkj = wkj_tmp;
-
+        
     end
  
     ite(iter)=iter;
@@ -170,13 +171,13 @@ for ix=-5*4:1:20*4
  
         for j=1:nhid
             sj(j)=wji(j,:)*oi;
-            oj(j)=max(sj(j),0);
+            oj(j)=1/(1+exp(-sj(j)));
         end
         oj(nhid1)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=max(sk(k),0);
+            ok(k)=1/(1+exp(-sk(k)));
         end
  
         [M,I] = max(ok);
