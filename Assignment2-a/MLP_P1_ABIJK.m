@@ -181,8 +181,8 @@ for n=N+1:1:N*2
     plot(data(n,1), data(n,2),'k s');
 end
  
-for ix=-30:1:31
-    for iy=-30:1:31
+for ix=-50:1:51
+    for iy=-50:1:51
         dx=0.2*(ix-1); 
         dy=0.2*(iy-1);
         oa=[dx dy 1]';
