@@ -56,8 +56,8 @@ dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
 itermax=20000;
-eta=0.7;            % (n -> eta -> learning rate)
-beta=0.3;           % momentum term
+eta=0.0003;            % (n -> eta -> learning rate)
+beta=0.0003;           % momentum term
  
 iter=0;
 error_avg=10;
@@ -83,25 +83,25 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
-            ob(j)=1/(1+exp(-sb(j)));    % sigmoid
+            ob(j)=max(sb(j),0);    % relu
         end
         ob(neuron_hid_layerB_with_bias)=1.0;
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=1/(1+exp(-si(j)));    % sigmoid
+            oi(j)=max(si(j),0);    % relu
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+            oj(j)=max(sj(j),0);    % relu
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            ok(k)=max(sk(k),0);    % relu
         end
         
         %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -110,7 +110,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 % Backward learning:
  
          for k=1:noutdim
-            deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)); % gradient term
+            deltak(k)=(dk(k)-ok(k))*(ok(k) > 0); % gradient term
          end
  
          for j=1:neuron_hid_layerJ_with_bias
@@ -125,7 +125,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
             for k=1:noutdim
                sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
             end
-            deltaj(j)=oj(j)*(1.0-oj(j))*sumback(j);
+            deltaj(j)=(oj(j) > 0)*sumback(j);
          end
 
          for j=1:neuron_hid_layerI
@@ -133,7 +133,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
             for k=1:neuron_hid_layerJ_with_bias
                sumback(j)=sumback(j)+deltaj(k)*wji(k,j);
             end
-            deltai(j)=oi(j)*(1.0-oi(j))*sumback(j);
+            deltai(j)=(oi(j) > 0)*sumback(j);
          end
  
          for j=1:neuron_hid_layerB
@@ -141,7 +141,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
             for k=1:neuron_hid_layerI_with_bias
                sumback(j)=sumback(j)+deltai(k)*wib(k,j);
             end
-            deltab(j)=ob(j)*(1.0-ob(j))*sumback(j);
+            deltab(j)=(ob(j) > 0)*sumback(j);
          end
 
          for i=1:ninpdim_with_bias
@@ -187,25 +187,25 @@ for ix=-30:1:31
  
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
-            ob(j)=1/(1+exp(-sb(j)));    % sigmoid
+            ob(j)=max(sb(j),0);    % sigmoid
         end
         ob(neuron_hid_layerB_with_bias)=1.0;
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=1/(1+exp(-si(j)));    % sigmoid
+            oi(j)=max(si(j),0);    % sigmoid
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+            oj(j)=max(sj(j),0);    % sigmoid
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            ok(k)=max(sk(k),0);    % signmoid
         end
 
         % Real output
