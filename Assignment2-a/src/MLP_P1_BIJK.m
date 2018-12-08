@@ -1,8 +1,3 @@
-% Appendix K: Matlab Program of Multilayer Perceptron
- 
-% 15k_Appendix_K_mlpKY3_modify.m
-% The program is written by Kou-Yuan Huang
- 
 clear all;
 
 i = 0:1:96;
