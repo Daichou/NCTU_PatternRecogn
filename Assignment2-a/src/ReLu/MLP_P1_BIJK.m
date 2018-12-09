@@ -45,8 +45,8 @@ dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.02;
 itermax=20000;
-eta=0.9;            % (n -> eta -> learning rate)
-beta=0.1;           % momentum term
+eta=0.001;            % (n -> eta -> learning rate)
+beta=0.001;           % momentum term
  
 iter=0;
 error_avg=10;
@@ -71,13 +71,13 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=1/(1+exp(-si(j)));    % sigmoid
+            oi(j)=max(si(j),0);    % RelU
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+            oj(j)=max(sj(j),0);    % ReLU
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
@@ -107,7 +107,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
             for k=1:noutdim
                sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
             end
-            deltaj(j)=oj(j)*(1.0-oj(j))*sumback(j);
+            deltaj(j)=(oj(j) > 0)*sumback(j);
          end
 
          for j=1:neuron_hid_layerI
@@ -115,7 +115,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
             for k=1:neuron_hid_layerJ_with_bias
                sumback(j)=sumback(j)+deltaj(k)*wji(k,j);
             end
-            deltai(j)=oi(j)*(1.0-oi(j))*sumback(j);
+            deltai(j)=(oi(j) > 0)*sumback(j);
          end
  
          for i=1:ninpdim_with_bias
@@ -160,19 +160,19 @@ for ix=-60:1:61
  
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=1/(1+exp(-si(j)));    % sigmoid
+            oi(j)=max(si(j));    % sigmoid
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+            oj(j)=max(sj(j),0);    % sigmoid
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            ok(k)=max(sk(k),0);    % signmoid
         end
 
         % Real output

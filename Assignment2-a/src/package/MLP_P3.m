@@ -46,15 +46,19 @@ x_input = [data(:,1) data(:,2)];
 y_output = [data(:,3) data(:,4) data(:,5) data(:,6)];
 x_input = x_input.';
 y_output = y_output.';
-net = feedforwardnet([5 5]);
+net = feedforwardnet([3]);
 net.trainParam.lr = 0.2;
 net.trainParam.epochs = 10000;
 net.trainParam.goal = 0.001;
+net.divideFcn= 'dividerand';
+net.divideParam.trainRatio= 1;
+net.divideParam.valRatio= 0;
+net.divideParam.testRatio=0;
 net = train(net,x_input,y_output);
 view(net);
 
-title_text = sprintf('P3: 2X5X5X2\n lr = %d, epochs = %f', net.trainParam.lr, net.trainParam.epochs);
-file_text = sprintf('P3_2X5X5X2_lr_%d_epochs_%f', net.trainParam.lr, net.trainParam.epochs);
+title_text = sprintf('P3: 2X3X2\n lr = %d, epochs = %f', net.trainParam.lr, net.trainParam.epochs);
+file_text = sprintf('P3_2X3X2_lr_%d_epochs_%f', net.trainParam.lr, net.trainParam.epochs);
 
 fig_decision = figure(1);
 hold on;

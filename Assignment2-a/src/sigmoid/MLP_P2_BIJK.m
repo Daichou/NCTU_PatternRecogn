@@ -18,9 +18,9 @@ data(N+1:2*N,4) = 1;
 % B = 2+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
-neuron_hid_layerJ=5;
+neuron_hid_layerJ=3;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=5;
+neuron_hid_layerI=3;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
 noutdim=2;
 
@@ -46,14 +46,14 @@ dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.001;
 itermax=20000;
-eta=0.7;            % (n -> eta -> learning rate)
-beta=0.3;           % momentum term
+eta=0.09;            % (n -> eta -> learning rate)
+beta=0.09;           % momentum term
  
 iter=0;
 error_avg=10;
  
-title_text = sprintf('P2 ABIJK: %d X %d X %d X %d \n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
-file_text = sprintf('P2_ABIJK_%dX%dX%dX%d_iter_%d_eta_%f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
+title_text = sprintf('P2 BIJK: %d X %d X %d X %d \n iter = %d, eta = %f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
+file_text = sprintf('P2_BIJK_%dX%dX%dX%d_iter_%d_eta_%f',ninpdim_with_bias,neuron_hid_layerI,neuron_hid_layerJ,noutdim,itermax,eta);
  
 % internal variables
 deltak = zeros(1,noutdim);

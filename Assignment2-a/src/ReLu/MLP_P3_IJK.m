@@ -44,14 +44,14 @@ data(3*N+1:4*N,6) = 1;
 % I=2+1;% J=3+1;% K=2;
 nvectors=N*4;
 ninpdim1=3;
-nhid=5;
+nhid=20;
 nhid1=nhid+1;
 noutdim=4;
 
 %initialize
-wkj = randn(noutdim,nhid1);
+wkj = normrnd(0,sqrt(2/(ninpdim1+noutdim)),noutdim,nhid1);
 wkj_tmp = zeros(size(wkj));
-wji = randn(nhid,ninpdim1);
+wji = normrnd(0,sqrt(2/(ninpdim1+noutdim)),nhid,ninpdim1);
 olddelwkj=zeros(noutdim*nhid1); % weight of Wkj (J -> K)
 olddelwji= zeros(ninpdim1*nhid);% weight of Wji (I -> J)
 
@@ -69,8 +69,8 @@ dk = zeros(noutdim,1);        % desired output
  
 Lowerlimit=0.02;
 itermax=20000;
-eta=0.003;            % (n -> eta -> learning rate)
-beta=0.003;           % momentum term
+eta=0.0001;            % (n -> eta -> learning rate)
+beta=0.00009;           % momentum term
  
 iter=0;
 error_avg=10;

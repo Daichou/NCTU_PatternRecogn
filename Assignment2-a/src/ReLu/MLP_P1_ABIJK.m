@@ -17,11 +17,11 @@ data(98:98+96,4) = 1;
 nvectors=N*2;
 ninpdim_with_bias=3;
 
-neuron_hid_layerJ=20;
+neuron_hid_layerJ=100;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=20;
+neuron_hid_layerI=100;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=20;
+neuron_hid_layerB=100;
 
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
@@ -56,10 +56,10 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=100000;
+itermax=10000;
 
-eta=0.00000002;            % (n -> eta -> learning rate)
-beta=0.00000001;           % momentum term
+eta=0.0005;            % (n -> eta -> learning rate)
+beta=0.0002;           % momentum term
 
  
 iter=0;
@@ -86,25 +86,25 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
-            ob(j)=max(sb(j),0);    % sigmoid
+            ob(j)=max(sb(j),0);    % ReLu
         end
         ob(neuron_hid_layerB_with_bias)=1.0;
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=max(si(j),0);    % sigmoid
+            oi(j)=max(si(j),0);    % ReLu
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=max(sj(j),0);    % sigmoid
+            oj(j)=max(sj(j),0);    % RelU
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=max(sk(k),0);    % signmoid
+            ok(k)=1/(1+exp(-sk(k)));    % signmoid
         end
         
         %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -113,7 +113,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 % Backward learning:
  
          for k=1:noutdim
-            deltak(k)=(dk(k)-ok(k))*(ok(k) > 0); % gradient term
+            deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)) ; % gradient term
          end
  
          for j=1:neuron_hid_layerJ_with_bias
@@ -189,25 +189,25 @@ for ix=-30:1:31
  
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
-            ob(j)=max(sb(j),0);    % sigmoid
+            ob(j)=max(sb(j),0);    % ReLu
         end
         ob(neuron_hid_layerB_with_bias)=1.0;
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
-            oi(j)=max(si(j),0);    % sigmoid
+            oi(j)=max(si(j),0);    % ReLu
         end
         oi(neuron_hid_layerI_with_bias)=1.0;
 
         for j=1:neuron_hid_layerJ
             sj(j)=wji(j,:)*oi;
-            oj(j)=max(sj(j),0);    % sigmoid
+            oj(j)=max(sj(j),0);    % ReLu
         end
         oj(neuron_hid_layerJ_with_bias)=1.0;
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=max(sk(k),0);    % signmoid
+            ok(k)=1/(1+exp(-sk(k)));    % signmoid
         end
 
         % Real output
