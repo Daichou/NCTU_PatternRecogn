@@ -13,6 +13,15 @@ data(98:98+96,1) = -1*r.*sin(theta);
 data(98:98+96,2) = -1*r.*cos(theta);
 data(98:98+96,3) = 0;
 data(98:98+96,4) = 1;
+
+x_max = max(data(:,1));
+x_min = min(data(:,1));
+y_max = max(data(:,2));
+y_min = min(data(:,2));
+
+n_data(:,1) = (data(:,1) - x_min)/(x_max - x_min);
+n_data(:,2) = (data(:,2) - y_min)/(y_max - y_min);
+
 % A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
 ninpdim_with_bias=3;
@@ -56,10 +65,10 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=10000;
+itermax=100000;
 
-eta=0.0005;            % (n -> eta -> learning rate)
-beta=0.0002;           % momentum term
+eta=0.00002;            % (n -> eta -> learning rate)
+beta=0.00001;           % momentum term
 
  
 iter=0;
@@ -81,7 +90,7 @@ while (error_avg > Lowerlimit) && (iter<itermax)
  
 % Forward Computation:
     for ivector=1:nvectors
-        oa=[data(ivector,1) data(ivector,2) 1]';
+        oa=[n_data(ivector,1) n_data(ivector,2) 1]';
         dk=[data(ivector,3) data(ivector,4)]';
 
         for j=1:neuron_hid_layerB
@@ -185,7 +194,9 @@ for ix=-30:1:31
     for iy=-30:1:31
         dx=0.2*(ix-1); 
         dy=0.2*(iy-1);
-        oa=[dx dy 1]';
+        n_dx = (dx - x_min)/(x_max - x_min);
+        n_dy = (dy - y_min)/(y_max - y_min);
+        oa=[n_dx n_dy 1]';
  
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
