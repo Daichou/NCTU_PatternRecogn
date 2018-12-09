@@ -76,8 +76,8 @@ dk = zeros(noutdim,1);        % desired output
  
 Lowerlimit=0.02;
 itermax=10000;
-eta=0.0001;            % (n -> eta -> learning rate)
-beta=0.00009;           % momentum term
+eta=0.0002;            % (n -> eta -> learning rate)
+beta=0.00015;           % momentum term
  
 iter=0;
 error_avg=10;
