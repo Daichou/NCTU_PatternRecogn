@@ -65,10 +65,10 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=100000;
+itermax=10000;
 
-eta=0.00002;            % (n -> eta -> learning rate)
-beta=0.00001;           % momentum term
+eta=0.00004;            % (n -> eta -> learning rate)
+beta=0.00002;           % momentum term
 
  
 iter=0;
