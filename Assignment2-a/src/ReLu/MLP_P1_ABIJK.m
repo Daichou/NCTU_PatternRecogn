@@ -17,11 +17,11 @@ data(98:98+96,4) = 1;
 nvectors=N*2;
 ninpdim_with_bias=3;
 
-neuron_hid_layerJ=200;
+neuron_hid_layerJ=20;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=200;
+neuron_hid_layerI=20;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=200;
+neuron_hid_layerB=20;
 
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
@@ -56,10 +56,10 @@ ok = zeros(noutdim,1);        % net output
 dk = zeros(noutdim,1);        % desired output
 
 Lowerlimit=0.01;
-itermax=1000;
+itermax=100000;
 
-eta=0.001;            % (n -> eta -> learning rate)
-beta=0.001;           % momentum term
+eta=0.00000002;            % (n -> eta -> learning rate)
+beta=0.00000001;           % momentum term
 
  
 iter=0;
