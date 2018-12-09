@@ -17,11 +17,11 @@ data(98:98+96,4) = 1;
 nvectors=N*2;
 ninpdim_with_bias=3;
 
-neuron_hid_layerJ=80;
+neuron_hid_layerJ=30;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
-neuron_hid_layerI=80;
+neuron_hid_layerI=30;
 neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-neuron_hid_layerB=80;
+neuron_hid_layerB=30;
 
 neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
@@ -59,7 +59,7 @@ Lowerlimit=0.01;
 itermax=100000;
 
 eta=0.05;            % (n -> eta -> learning rate)
-beta=0.05;           % momentum term
+beta=0.025;           % momentum term
 
  
 iter=0;
