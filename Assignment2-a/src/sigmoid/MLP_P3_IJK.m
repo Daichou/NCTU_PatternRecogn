@@ -1,3 +1,4 @@
+clear all;
 mu1 = [0 0];
 sigma1 = [1 0; 0 1];
 rng default;  % For reproducibility

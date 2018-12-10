@@ -16,8 +16,8 @@ data(98:98+96,4) = 1;
 
 layer = [30 30 30];
 itermax = 10000;
-eta = 0.01;
-beta = 0.009;
+eta = 0.1;
+beta = 0.1;
 Lowerlimit = 0.001;
 title_text = sprintf('ABIJK: 2 X %d X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),layer(3),itermax,eta,beta);
 file_text = sprintf('P1_ABIJK_%dX%dX%dX%dX%d_iter_%d_eta_%f_beta_%f', layer(1),layer(2),layer(3),itermax,eta,beta);
