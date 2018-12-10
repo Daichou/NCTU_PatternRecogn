@@ -43,7 +43,7 @@ for n=N+1:1:N*2
 end
  
 for ix=-30:1:31
-    for iy=-30:1:31
+    for iy=-35:1:36
         dx=0.2*(ix-1); 
         dy=0.2*(iy-1);
         oa=[dx dy 1]';
