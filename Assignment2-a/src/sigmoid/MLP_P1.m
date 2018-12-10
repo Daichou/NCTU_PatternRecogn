@@ -14,8 +14,8 @@ data(98:98+96,2) = -1*r.*cos(theta);
 data(98:98+96,3) = 0;
 data(98:98+96,4) = 1;
 
-layer = [30 30 30];
-itermax = 10000;
+layer = [90 90 90];
+itermax = 100000;
 eta = 0.1;
 beta = 0.09;
 Lowerlimit = 0.001;
