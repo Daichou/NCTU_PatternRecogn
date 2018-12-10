@@ -10,13 +10,13 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
     %initialize
     wkj = randn(noutdim,neuron_hid_layerI_with_bias);
     wji = randn(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
-    wib = randn(neuron_hid_layerI_with_bias,neuron_hid_layerB_with_bias);
+    wib = randn(neuron_hid_layerI_with_bias,ninpdim_with_bias);
     wkj_tmp = zeros(size(wkj));
     wji_tmp = zeros(size(wji));
     wib_tmp = zeros(size(wib));
     olddelwkj=zeros(noutdim , neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)
     olddelwji=zeros(neuron_hid_layerJ_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (I -> J)
-    olddelwib=zeros(neuron_hid_layerB_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
+    olddelwib=zeros(ninpdim_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
     ob = zeros(ninpdim_with_bias,1);
     ob(ninpdim_with_bias) = 1;
 
@@ -47,8 +47,8 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
      
     % Forward Computation:
         for ivector=1:nvectors
-            ob=[data(ivector,1) data(ivector,2) 1]';
-            dk=[data(ivector,3) data(ivector,4)]';
+            ob=[data(ivector,1:input) 1]';
+            dk=[data(ivector,input+1:input+output)]';
 
             for j=1:neuron_hid_layerI
                 si(j)=wib(j,:)*ob;
@@ -66,7 +66,6 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
                 sk(k)=wkj(k,:)*oj;
                 ok(k)=1/(1+exp(-sk(k)));    % signmoid
             end
-
             %error=error+ (dk-ok)' *(dk-ok)/2;
             error=error+sum(abs(dk-ok)); % abs is absolute each element
  

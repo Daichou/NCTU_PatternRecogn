@@ -1,5 +1,4 @@
 function ok = FeedFoward_BIJK(wib,wji,wkj,oa,input,output,layer)
-    nvectors=length(data);
     ninpdim_with_bias=input+1;
     neuron_hid_layerJ=layer(1);
     neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
