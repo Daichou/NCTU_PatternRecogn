@@ -6,8 +6,8 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
     noutdim=output;
 
     %initialize
-    wkj = randn(noutdim,neuron_hid_layerJ_with_bias);
-    wji = randn(neuron_hid_layerJ_with_bias,ninpdim_with_bias);
+    wkj = normrnd(0,sqrt(2/(input+output)),noutdim,neuron_hid_layerJ_with_bias);
+    wji = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerJ_with_bias,ninpdim_with_bias);
     wkj_tmp = zeros(size(wkj));
     wji_tmp = zeros(size(wji));
     olddelwkj=zeros(noutdim , neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)

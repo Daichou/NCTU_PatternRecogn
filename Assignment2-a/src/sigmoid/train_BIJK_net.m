@@ -8,9 +8,9 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
     noutdim=output;
 
     %initialize
-    wkj = randn(noutdim,neuron_hid_layerI_with_bias);
-    wji = randn(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
-    wib = randn(neuron_hid_layerI_with_bias,ninpdim_with_bias);
+    wkj = normrnd(0,sqrt(2/(input+output)),noutdim,neuron_hid_layerI_with_bias);
+    wji = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
+    wib = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerI_with_bias,ninpdim_with_bias);
     wkj_tmp = zeros(size(wkj));
     wji_tmp = zeros(size(wji));
     wib_tmp = zeros(size(wib));
@@ -77,7 +77,7 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
 
             for j=1:neuron_hid_layerJ_with_bias
                for k=1:noutdim
-                  wkj_tmp(k,j)=wkj(k,j)+eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
+                  wkj(k,j)=wkj(k,j)+eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
                   olddelwkj(k,j)=eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
                end
             end
@@ -92,7 +92,7 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
 
             for j=1:neuron_hid_layerI_with_bias
                for k=1:neuron_hid_layerJ
-                  wji_tmp(k,j)=wji(k,j)+eta*deltaj(k)*oi(j)+beta*olddelwji(k,j);
+                  wji(k,j)=wji(k,j)+eta*deltaj(k)*oi(j)+beta*olddelwji(k,j);
                   olddelwji(k,j)=eta*deltaj(k)*oi(j)+beta*olddelwji(k,j);
                end
             end
@@ -112,7 +112,6 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
                 end
              end
              wkj = wkj_tmp;
-
         end
      
         ite(iter)=iter;
