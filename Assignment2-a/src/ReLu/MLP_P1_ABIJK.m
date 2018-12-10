@@ -19,12 +19,13 @@ x_min = min(data(:,1));
 y_max = max(data(:,2));
 y_min = min(data(:,2));
 
-n_data(:,1) = (data(:,1) - x_min)/(x_max - x_min);
-n_data(:,2) = (data(:,2) - y_min)/(y_max - y_min);
+data(:,5) = (data(:,1) - x_min)/(x_max - x_min);
+data(:,6) = (data(:,2) - y_min)/(y_max - y_min);
+data(:,7) = data(:,5).*data(:,6);
 
 % A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
 nvectors=N*2;
-ninpdim_with_bias=3;
+ninpdim_with_bias=4;
 
 neuron_hid_layerJ=100;
 neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
@@ -36,11 +37,11 @@ neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
 noutdim=2;
 
 %initialize
-wkj = randn(noutdim,neuron_hid_layerI_with_bias);
+wkj = normrnd(0,sqrt(2/(ninpdim_with_bias+noutdim)),noutdim,neuron_hid_layerI_with_bias);
 wkj_tmp = zeros(size(wkj));
-wji = randn(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
-wib = randn(neuron_hid_layerI_with_bias,neuron_hid_layerB_with_bias);
-wba = randn(neuron_hid_layerB_with_bias,ninpdim_with_bias);
+wji = normrnd(0,sqrt(2/(ninpdim_with_bias+noutdim)),neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
+wib = normrnd(0,sqrt(2/(ninpdim_with_bias+noutdim)),neuron_hid_layerI_with_bias,neuron_hid_layerB_with_bias);
+wba = normrnd(0,sqrt(2/(ninpdim_with_bias+noutdim)),neuron_hid_layerB_with_bias,ninpdim_with_bias);
 olddelwkj=zeros(noutdim , neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)
 olddelwji=zeros(neuron_hid_layerJ_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (I -> J)
 olddelwib=zeros(neuron_hid_layerB_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
@@ -67,8 +68,8 @@ dk = zeros(noutdim,1);        % desired output
 Lowerlimit=0.01;
 itermax=10000;
 
-eta=0.00004;            % (n -> eta -> learning rate)
-beta=0.00002;           % momentum term
+eta=0.02;            % (n -> eta -> learning rate)
+beta=0.018;           % momentum term
 
  
 iter=0;
@@ -79,6 +80,7 @@ file_text = sprintf('P1_ABIJK_%dX%dX%dX%dX%d_iter_%d_eta_%f_beta_%f',ninpdim_wit
 
 % internal variables
 deltak = zeros(1,noutdim);
+deltak_sum = zeros(1,noutdim);
 deltaj = zeros(1,neuron_hid_layerJ_with_bias);
 deltai = zeros(1,neuron_hid_layerI_with_bias);
 deltab = zeros(1,neuron_hid_layerB_with_bias);
@@ -87,10 +89,10 @@ sumback = zeros(1,max(neuron_hid_layerJ_with_bias, max(neuron_hid_layerI_with_bi
 while (error_avg > Lowerlimit) && (iter<itermax)
     iter=iter+1;
     error=0;
- 
+     
 % Forward Computation:
     for ivector=1:nvectors
-        oa=[n_data(ivector,1) n_data(ivector,2) 1]';
+        oa=[data(ivector,5) data(ivector,6) data(ivector,7) 1]';
         dk=[data(ivector,3) data(ivector,4)]';
 
         for j=1:neuron_hid_layerB
@@ -113,7 +115,8 @@ while (error_avg > Lowerlimit) && (iter<itermax)
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            %ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            ok(k)=max(sk(k),0);    % ReLu
         end
         
         %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -122,13 +125,19 @@ while (error_avg > Lowerlimit) && (iter<itermax)
 % Backward learning:
  
          for k=1:noutdim
-            deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)) ; % gradient term
+            %deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)) ; % gradient term
+            deltak(k)=(dk(k)-ok(k))*(ok(k) > 0) ; % gradient term
+            %deltak_sum(k) = deltak_sum(k) + deltak(k)*deltak(k);
          end
  
          for j=1:neuron_hid_layerJ_with_bias
             for k=1:noutdim
-               wkj_tmp(k,j)=wkj(k,j)+eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
-               olddelwkj(k,j)=eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
+                %eta_ada = eta/sqrt(deltak_sum(k)+1e8);
+                %beta_ada = beta/sqrt(deltak_sum(k)+1e8);
+                %wkj_tmp(k,j)=wkj(k,j)+eta_ada*deltak(k)*oj(j)+beta_ada*olddelwkj(k,j);
+                %olddelwkj(k,j)=eta_ada*deltak(k)*oj(j)+beta_ada*olddelwkj(k,j);
+                wkj_tmp(k,j)=wkj(k,j)+eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
+                olddelwkj(k,j)=eta*deltak(k)*oj(j)+beta*olddelwkj(k,j);
             end
          end
  
@@ -196,7 +205,7 @@ for ix=-30:1:31
         dy=0.2*(iy-1);
         n_dx = (dx - x_min)/(x_max - x_min);
         n_dy = (dy - y_min)/(y_max - y_min);
-        oa=[n_dx n_dy 1]';
+        oa=[n_dx n_dy n_dx*n_dy 1]';
  
         for j=1:neuron_hid_layerB
             sb(j)=wba(j,:)*oa;
@@ -218,7 +227,8 @@ for ix=-30:1:31
  
         for k=1:noutdim
             sk(k)=wkj(k,:)*oj;
-            ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            %ok(k)=1/(1+exp(-sk(k)));    % signmoid
+            ok(k)=max(sk(k),0);    % ReLu
         end
 
         % Real output

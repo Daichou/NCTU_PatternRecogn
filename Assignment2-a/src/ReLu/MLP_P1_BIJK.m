@@ -14,6 +14,15 @@ data(98:98+96,2) = -1*r.*cos(theta);
 data(98:98+96,3) = 0;
 data(98:98+96,4) = 1;
 
+x_max = max(data(:,1));
+x_min = min(data(:,1));
+y_max = max(data(:,2));
+y_min = min(data(:,2));
+
+n_data(:,1) = (data(:,1) - x_min)/(x_max - x_min);
+n_data(:,2) = (data(:,2) - y_min)/(y_max - y_min);
+n_data(:,3) = n_data(:,1).*n_data(:,2);
+
 % B = 2+1; % I=3+1;% J=3+1;% K=2;
 nvectors=97+97;
 ninpdim_with_bias=3;
@@ -63,11 +72,12 @@ sumback = zeros(1,max(neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias));
 while (error_avg > Lowerlimit) && (iter<itermax)
     iter=iter+1;
     error=0;
- 
+    data_index = randperm(length(data)); 
 % Forward Computation:
     for ivector=1:nvectors
-        ob=[data(ivector,1) data(ivector,2) 1]';
-        dk=[data(ivector,3) data(ivector,4)]';
+        r_index = data_index(ivector);
+        ob=[n_data(r_index,1) n_data(r_index,2) 1]';
+        dk=[data(r_index,3) data(r_index,4)]';
 
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
@@ -152,11 +162,13 @@ for n=98:1:194
     plot(data(n,1), data(n,2),'k s');
 end
  
-for ix=-60:1:61
-    for iy=-160:1:161
-        dx=0.05*(ix-1); 
-        dy=0.05*(iy-1);
-        ob=[dx dy 1]';
+for ix=-30:1:31
+    for iy=-30:1:31
+        dx=0.2*(ix-1); 
+        dy=0.2*(iy-1);
+        ndx = (dx - x_min)/(x_max - x_min);
+        ndy = (dy - y_min)/(y_max - y_min);
+        ob=[ndx ndy 1]';
  
         for j=1:neuron_hid_layerI
             si(j)=wib(j,:)*ob;
