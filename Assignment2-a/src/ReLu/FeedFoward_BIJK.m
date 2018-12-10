@@ -1,16 +1,12 @@
-
-function ok = FeedFoward(wba,wib,wji,wkj,oa,input,output,layer)
+function ok = FeedFoward_BIJK(wib,wji,wkj,oa,input,output,layer)
     ninpdim_with_bias=input+1;
     neuron_hid_layerJ=layer(1);
     neuron_hid_layerJ_with_bias=neuron_hid_layerJ+1;
     neuron_hid_layerI=layer(2);
     neuron_hid_layerI_with_bias=neuron_hid_layerI+1;
-    neuron_hid_layerB=layer(3);
-    neuron_hid_layerB_with_bias=neuron_hid_layerB+1;
     noutdim=output;
-    sb = zeros(neuron_hid_layerB_with_bias,1);
-    ob = zeros(neuron_hid_layerB_with_bias,1);
-    ob(neuron_hid_layerB_with_bias) = 1;
+    ob = zeros(ninpdim_with_bias,1);
+    ob(ninpdim_with_bias) = 1;
 
     si = zeros(ninpdim_with_bias,1);       % input of hidden layer i
     oi = zeros(neuron_hid_layerJ_with_bias,1);
@@ -22,31 +18,22 @@ function ok = FeedFoward(wba,wib,wji,wkj,oa,input,output,layer)
 
     sk = zeros(neuron_hid_layerJ_with_bias,1);        % input of output layer k
     ok = zeros(noutdim,1);        % net output
-
-    for j=1:neuron_hid_layerB
-        sb(j)=wba(j,:)*oa;
-        ob(j)=Activation(sb(j));    % sigmoid
-    end
-    ob(neuron_hid_layerB_with_bias)=1.0;
+    dk = zeros(noutdim,1);        % desired output
 
     for j=1:neuron_hid_layerI
         si(j)=wib(j,:)*ob;
-        oi(j)=Activation(si(j));    % sigmoid
+        oi(j)=1/(1+exp(-si(j)));    % sigmoid
     end
     oi(neuron_hid_layerI_with_bias)=1.0;
 
     for j=1:neuron_hid_layerJ
         sj(j)=wji(j,:)*oi;
-        oj(j)=Activation(sj(j));    % sigmoid
+        oj(j)=1/(1+exp(-sj(j)));    % sigmoid
     end
     oj(neuron_hid_layerJ_with_bias)=1.0;
 
     for k=1:noutdim
         sk(k)=wkj(k,:)*oj;
-        ok(k)=Activation(sk(k));    % signmoid
+        ok(k)=1/(1+exp(-sk(k)));    % signmoid
     end
-end
-
-function o = Activation(s)
-    o = Sigmoid(s);
 end

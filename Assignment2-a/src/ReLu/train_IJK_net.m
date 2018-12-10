@@ -41,13 +41,13 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
 
             for j=1:neuron_hid_layerJ
                 sj(j)=wji(j,:)*oi;
-                oj(j)=Activation(sj(j));    % sigmoid
+                oj(j)=1/(1+exp(-sj(j)));    % sigmoid
             end
             oj(neuron_hid_layerJ_with_bias)=1.0;
  
             for k=1:noutdim
                 sk(k)=wkj(k,:)*oj;
-                ok(k)=Activation(sk(k));    % signmoid
+                ok(k)=1/(1+exp(-sk(k)));    % signmoid
             end
 
             %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -56,7 +56,7 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
     % Backward learning:
 
             for k=1:noutdim
-               deltak(k)=(dk(k)-ok(k))*deActivation(ok(k)); % gradient term
+               deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)); % gradient term
             end
 
             for j=1:neuron_hid_layerJ_with_bias
@@ -71,7 +71,7 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
                for k=1:noutdim
                   sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
                end
-               deltaj(j)=deActivation(oj(j))*sumback(j);
+               deltaj(j)=oj(j)*(1.0-oj(j))*sumback(j);
             end
 
 
@@ -89,12 +89,4 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
         error_avg=error/nvectors;
         error_r(iter)=error_avg;
     end
-end
-
-function o = Activation(s)
-    o = Sigmoid(s);
-end
-
-function o = deActivation(s)
-    o = deSigmoid(s);
 end
