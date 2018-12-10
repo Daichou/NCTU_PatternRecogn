@@ -14,12 +14,16 @@ function ok = FeedFoward_IJK(wji,wkj,oi,input,output,layer)
 
     for j=1:neuron_hid_layerJ
         sj(j)=wji(j,:)*oi;
-        oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+        oj(j)=Activation(sj(j));    % sigmoid
     end
     oj(neuron_hid_layerJ_with_bias)=1.0;
 
     for k=1:noutdim
         sk(k)=wkj(k,:)*oj;
-        ok(k)=1/(1+exp(-sk(k)));    % signmoid
+        ok(k)=Activation(sk(k));    % signmoid
     end
+end
+
+function o = Activation(s)
+    o = Sigmoid(s);
 end

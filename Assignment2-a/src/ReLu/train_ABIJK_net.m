@@ -51,37 +51,44 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
     deltai = zeros(1,neuron_hid_layerI_with_bias);
     deltab = zeros(1,neuron_hid_layerB_with_bias);
     sumback = zeros(1,max(neuron_hid_layerJ_with_bias, max(neuron_hid_layerI_with_bias,neuron_hid_layerB_with_bias)));
-     
+    counter = 0;
     while (error_avg > Lowerlimit) && (iter<itermax)
         iter=iter+1;
         error=0;
-     
+        data_index = randperm(length(data));
+        if counter > 1000
+            counter = 0;
+            eta = eta*0.9;
+            beta = beta*0.9;
+        end
+        counter = counter + 1;
     % Forward Computation:
         for ivector=1:nvectors
-            oa=[data(ivector,1) data(ivector,2) 1]';
-            dk=[data(ivector,3) data(ivector,4)]';
+            rvector = data_index(ivector);
+            oa=[data(rvector,1:input) 1]';
+            dk=[data(rvector,input+1:output+input)]';
 
             for j=1:neuron_hid_layerB
                 sb(j)=wba(j,:)*oa;
-                ob(j)=1/(1+exp(-sb(j)));    % sigmoid
+                ob(j)=Activation(sb(j));    % sigmoid
             end
             ob(neuron_hid_layerB_with_bias)=1.0;
 
             for j=1:neuron_hid_layerI
                 si(j)=wib(j,:)*ob;
-                oi(j)=1/(1+exp(-si(j)));    % sigmoid
+                oi(j)=Activation(si(j));    % sigmoid
             end
             oi(neuron_hid_layerI_with_bias)=1.0;
 
             for j=1:neuron_hid_layerJ
                 sj(j)=wji(j,:)*oi;
-                oj(j)=1/(1+exp(-sj(j)));    % sigmoid
+                oj(j)=Activation(sj(j));    % sigmoid
             end
             oj(neuron_hid_layerJ_with_bias)=1.0;
      
             for k=1:noutdim
                 sk(k)=wkj(k,:)*oj;
-                ok(k)=1/(1+exp(-sk(k)));    % signmoid
+                ok(k)=Activation(sk(k));    % signmoid
             end
             
             %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -90,7 +97,7 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
     % Backward learning:
      
              for k=1:noutdim
-                deltak(k)=(dk(k)-ok(k))*ok(k)*(1.0-ok(k)); % gradient term
+                deltak(k)=(dk(k)-ok(k))*deActivation(ok(k)); % gradient term
              end
      
              for j=1:neuron_hid_layerJ_with_bias
@@ -105,7 +112,7 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
                 for k=1:noutdim
                    sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
                 end
-                deltaj(j)=oj(j)*(1.0-oj(j))*sumback(j);
+                deltaj(j)=deActivation(oj(j))*sumback(j);
              end
 
              for j=1:neuron_hid_layerI_with_bias
@@ -120,7 +127,7 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
                 for k=1:neuron_hid_layerJ_with_bias
                    sumback(j)=sumback(j)+deltaj(k)*wji(k,j);
                 end
-                deltai(j)=oi(j)*(1.0-oi(j))*sumback(j);
+                deltai(j)=deActivation(oi(j))*sumback(j);
              end
      
              for j=1:neuron_hid_layerB_with_bias
@@ -135,7 +142,7 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
                 for k=1:neuron_hid_layerI_with_bias
                    sumback(j)=sumback(j)+deltai(k)*wib(k,j);
                 end
-                deltab(j)=ob(j)*(1.0-ob(j))*sumback(j);
+                deltab(j)=deActivation(ob(j))*sumback(j);
              end
 
              for i=1:ninpdim_with_bias
@@ -152,4 +159,12 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
         error_avg=error/nvectors;
         error_r(iter)=error_avg;
     end
+end
+
+function o = Activation(s)
+    o = ReLu(s);
+end
+
+function o = deActivation(s)
+    o = deReLu(s);
 end
