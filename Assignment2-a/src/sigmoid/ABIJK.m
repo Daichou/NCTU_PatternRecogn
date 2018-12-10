@@ -1,19 +1,5 @@
-clear all;
-N=97;
-i = 0:1:96;
-theta = i.*pi/16;
-r = 6.5*(104-i)/104;
 
-data(1:97,1) = r.*sin(theta);
-data(1:97,2) = r.*cos(theta);
-data(1:97,3) = 1;
-data(1:97,4) = 0;
-
-data(98:98+96,1) = -1*r.*sin(theta);
-data(98:98+96,2) = -1*r.*cos(theta);
-data(98:98+96,3) = 0;
-data(98:98+96,4) = 1;
-% A = 2+1 % B = 5+1; % I=3+1;% J=3+1;% K=2;
+function [] = train_ABIJK_net
 nvectors=N*2;
 ninpdim_with_bias=3;
 
