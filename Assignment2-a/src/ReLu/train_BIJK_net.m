@@ -8,15 +8,15 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
     noutdim=output;
 
     %initialize
-    wkj = normrnd(0,sqrt(2/(input+output)),noutdim,neuron_hid_layerI_with_bias);
-    wji = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerJ_with_bias,neuron_hid_layerI_with_bias);
+    wkj = normrnd(0,sqrt(2/(input+output)),noutdim,neuron_hid_layerJ_with_bias);
+    wji = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerI_with_bias,neuron_hid_layerJ_with_bias);
     wib = normrnd(0,sqrt(2/(input+output)),neuron_hid_layerI_with_bias,ninpdim_with_bias);
     wkj_tmp = zeros(size(wkj));
     wji_tmp = zeros(size(wji));
     wib_tmp = zeros(size(wib));
     olddelwkj=zeros(noutdim , neuron_hid_layerJ_with_bias); % weight of Wkj (J -> K)
-    olddelwji=zeros(neuron_hid_layerJ_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (I -> J)
-    olddelwib=zeros(ninpdim_with_bias , neuron_hid_layerI_with_bias);   % weight of Wji (B -> I)
+    olddelwji=zeros(neuron_hid_layerI_with_bias , neuron_hid_layerJ_with_bias);   % weight of Wji (I -> J)
+    olddelwib=zeros(neuron_hid_layerI_with_bias,ninpdim_with_bias);   % weight of Wji (B -> I)
     ob = zeros(ninpdim_with_bias,1);
     ob(ninpdim_with_bias) = 1;
 
@@ -39,15 +39,17 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
     deltak = zeros(1,noutdim);
     deltaj = zeros(1,neuron_hid_layerJ_with_bias);
     deltai = zeros(1,neuron_hid_layerI_with_bias);
-    sumback = zeros(1,max(neuron_hid_layerJ_with_bias, max(neuron_hid_layerI_with_bias)));
+    sumback = zeros(1,max(neuron_hid_layerJ_with_bias, neuron_hid_layerI_with_bias));
 
     while (error_avg > Lowerlimit) && (iter<itermax)
         iter=iter+1;
         error=0;
     % Forward Computation:
+        r_index = randperm(length(data));
         for ivector=1:nvectors
-            ob=[data(ivector,1:input) 1]';
-            dk=[data(ivector,input+1:input+output)]';
+            rvector = r_index(ivector);
+            ob=[data(rvector,1:input) 1]';
+            dk=[data(rvector,input+1:input+output)]';
 
             for j=1:neuron_hid_layerI
                 si(j)=wib(j,:)*ob;
@@ -124,5 +126,5 @@ function o = Activation(s)
 end
 
 function o = deActivation(s)
-    o = deReLu (s);
+    o = deReLu(s);
 end

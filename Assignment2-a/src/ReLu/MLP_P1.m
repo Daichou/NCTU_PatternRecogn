@@ -30,27 +30,17 @@ data(:,2) = (data(:,2) - y_min)/(y_max - y_min);
 data(:,3) = data(:,1).*data(:,1)+data(:,2).*data(:,2);
 data(:,4) = data(:,1).*data(:,2);
 
-<<<<<<< HEAD
-layer = [30 30 30];
-itermax = 20000;
-eta = 0.0001;
-beta = 0.00002;
-=======
-layer = [100 100];
-itermax = 100000;
-eta = 0.00004;
-beta = 0.000004;
->>>>>>> 08d541427b56450f107c8394b31f5fb28db176a2
+
+layer = [40 40 40];
+itermax = 40000;
+eta = 0.00011;
+beta = 0.00010;
 Lowerlimit = 0.001;
-%title_text = sprintf('ABIJK: 3 X %d X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),layer(3),itermax,eta,beta);
-%file_text = sprintf('P1_ABIJK_3X%dX%dX%dX2_iter_%d_eta_%f_beta_%f', layer(1),layer(2),layer(3),itermax,eta,beta);
+title_text = sprintf('ABIJK: 3 X %d X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),layer(3),itermax,eta,beta);
+file_text = sprintf('P1_ABIJK_3X%dX%dX%dX2_iter_%d_eta_%f_beta_%f', layer(1),layer(2),layer(3),itermax,eta,beta);
 
-title_text = sprintf('BIJK: 3 X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),itermax,eta,beta);
-file_text = sprintf('P1_BIJK_3X%dX%dX2_iter_%d_eta_%f_beta_%f', layer(1),layer(2),itermax,eta,beta);
+[wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,4,2,itermax,Lowerlimit);
 
-
-% [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,4,2,itermax,Lowerlimit);
-[wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,4,2,itermax,Lowerlimit);
 fig_error = figure(1);
 hold on;
 
@@ -77,8 +67,7 @@ for ix=-30:1:31
         ndy = (dy-y_min)/(y_max - y_min);
         oa=[ndx ndy ndx*ndx+ndy*ndy ndx*ndy 1]';
 
-        %ok = FeedFoward_ABIJK(wba,wib,wji,wkj,oa,4,2,layer);
-        ok = FeedFoward_BIJK(wib,wji,wkj,oa,4,2,layer);
+        ok = FeedFoward_ABIJK(wba,wib,wji,wkj,oa,4,2,layer);
         
         % Real output
         if ok(1,1)<0.5
