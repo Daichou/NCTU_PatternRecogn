@@ -28,9 +28,9 @@ data(:,2) = (data(:,2) - y_min)/(y_max - y_min);
 data(:,3) = data(:,1).*data(:,2);
 
 layer = [30 30 30];
-itermax = 100000;
-eta = 0.00004;
-beta = 0.000004;
+itermax = 20000;
+eta = 0.0001;
+beta = 0.00002;
 Lowerlimit = 0.001;
 title_text = sprintf('ABIJK: 3 X %d X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),layer(3),itermax,eta,beta);
 file_text = sprintf('P1_ABIJK_3X%dX%dX%dX2_iter_%d_eta_%f_beta_%f', layer(1),layer(2),layer(3),itermax,eta,beta);
