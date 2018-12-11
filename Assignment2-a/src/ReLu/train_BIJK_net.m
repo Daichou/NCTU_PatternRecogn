@@ -120,9 +120,9 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
 end
 
 function o = Activation(s)
-    o = Sigmoid(s);
+    o = ReLu(s);
 end
 
 function o = deActivation(s)
-    o = deSigmoid(s);
+    o = deReLu (s);
 end
