@@ -67,7 +67,7 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
                 sk(k)=wkj(k,:)*oj;
                 ok(k)=Activation(sk(k));    % signmoid
             end
-            %error=error+ (dk-ok)' *(dk-ok)/2;
+           
             error=error+sum(abs(dk-ok)); % abs is absolute each element
  
     % Backward learning:

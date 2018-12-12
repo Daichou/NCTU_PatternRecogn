@@ -25,25 +25,25 @@ function ok = FeedFoward(wba,wib,wji,wkj,oa,input,output,layer)
 
     for j=1:neuron_hid_layerB
         sb(j)=wba(j,:)*oa;
-        ob(j)=Activation(sb(j));    % sigmoid
+        ob(j)=Activation(sb(j));    % 
     end
     ob(neuron_hid_layerB_with_bias)=1.0;
 
     for j=1:neuron_hid_layerI
         si(j)=wib(j,:)*ob;
-        oi(j)=Activation(si(j));    % sigmoid
+        oi(j)=Activation(si(j));    % 
     end
     oi(neuron_hid_layerI_with_bias)=1.0;
 
     for j=1:neuron_hid_layerJ
         sj(j)=wji(j,:)*oi;
-        oj(j)=Activation(sj(j));    % sigmoid
+        oj(j)=Activation(sj(j));    % 
     end
     oj(neuron_hid_layerJ_with_bias)=1.0;
 
     for k=1:noutdim
         sk(k)=wkj(k,:)*oj;
-        ok(k)=Activation(sk(k));    % signmoid
+        ok(k)=Activation(sk(k));    % 
     end
 end
 
