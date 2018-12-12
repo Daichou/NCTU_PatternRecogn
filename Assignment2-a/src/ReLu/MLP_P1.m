@@ -31,10 +31,10 @@ data(:,3) = data(:,1).*data(:,1)+data(:,2).*data(:,2);
 data(:,4) = data(:,1).*data(:,2);
 
 
-layer = [40 40 40];
+layer = [50 50 50];
 itermax = 40000;
-eta = 0.00011;
-beta = 0.00010;
+eta = 0.00009;
+beta = 0.00008;
 Lowerlimit = 0.001;
 title_text = sprintf('ABIJK: 3 X %d X %d X %d X 2 \n iter = %d, eta = %f, beta = %f', layer(1),layer(2),layer(3),itermax,eta,beta);
 file_text = sprintf('P1_ABIJK_3X%dX%dX%dX2_iter_%d_eta_%f_beta_%f', layer(1),layer(2),layer(3),itermax,eta,beta);
