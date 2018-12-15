@@ -65,8 +65,8 @@ function [wkj,wji,wib,wba,error_r,ite] = train_ABIJK_net(data,eta,beta,layer,inp
     % Forward Computation:
         for ivector=1:nvectors
             rvector = data_index(ivector);
-            oa=[data(rvector,1:input) 1]';
-            dk=[data(rvector,input+1:output+input)]';
+            oa=single([data(rvector,1:input) 1]');
+            dk=single([data(rvector,input+1:output+input)]');
 
             for j=1:neuron_hid_layerB
                 sb(j)=wba(j,:)*oa;

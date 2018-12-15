@@ -48,8 +48,8 @@ function [wkj,wji,wib,error_r,ite] = train_BIJK_net(data,eta,beta,layer,input,ou
         r_index = randperm(length(data));
         for ivector=1:nvectors
             rvector = r_index(ivector);
-            ob=[data(rvector,1:input) 1]';
-            dk=[data(rvector,input+1:input+output)]';
+            ob=single([data(rvector,1:input) 1]');
+            dk=single[data(rvector,input+1:input+output)]');
 
             for j=1:neuron_hid_layerI
                 si(j)=wib(j,:)*ob;
