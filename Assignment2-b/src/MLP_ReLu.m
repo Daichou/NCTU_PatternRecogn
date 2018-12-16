@@ -27,13 +27,13 @@ data = cat(2,x_train_list,y_train_list);
 layer = [200];
 n_input = 60000;
 n_output = 10;
-itermax = 1;
-eta = 0.1;
-beta = 0.09;
+itermax = 10;
+eta = 0.001;
+beta = 0.0009;
 Lowerlimit = 0.001;
-method = 1; % 1 : Sigmoid 0 : ReLu
-title_text = sprintf('Sigmoid ABIJK: %d X %d X %d \n iter = %d, eta = %f, beta = %f',n_input,layer(1),n_output,itermax,eta,beta);
-file_text = sprintf('Sigmoid_ABIJK_%dX%dX%d_iter_%d_eta_%f_beta_%f',n_input,layer(1),n_output,itermax,eta,beta);
+method = 0; % 1 : Sigmoid 0 : ReLu
+title_text = sprintf('ReLu IJK: %d X %d X %d \n iter = %d, eta = %f, beta = %f',n_input,layer(1),n_output,itermax,eta,beta);
+file_text = sprintf('ReLu_IJK_%dX%dX%d_iter_%d_eta_%f_beta_%f',n_input,layer(1),n_output,itermax,eta,beta);
 
 [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,784,10,itermax,Lowerlimit,method);
 
@@ -100,7 +100,7 @@ saveas(fig_train,strcat(file_text,'_test.fig'));
 fig_confu = figure(5)
 set(fig_confu, 'Position', get(0, 'Screensize'));
 Confu = confusionmat(single(y_test), single(result_r.'));
-confusionchart(int32(Confu),'Title','Sigmoid Confusion Matrix', ...
+confusionchart(int32(Confu),'Title','ReLu Confusion Matrix', ...
     'RowSummary','row-normalized', ...
     'ColumnSummary','column-normalized');
 saveas(fig_confu,strcat(file_text,'_conf.jpg'));
