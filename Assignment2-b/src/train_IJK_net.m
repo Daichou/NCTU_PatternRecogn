@@ -1,4 +1,4 @@
-function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,output,itermax,Lowerlimit)
+function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,output,itermax,Lowerlimit,method)
     nvectors=length(data);
     ninpdim_with_bias=input+1;
     neuron_hid_layerJ=layer(1);
@@ -43,13 +43,13 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
 
             for j=1:neuron_hid_layerJ
                 sj(j)=wji(j,:)*oi;
-                oj(j)=Activation(sj(j));    % sigmoid
+                oj(j)=Activation(sj(j),method);    % sigmoid
             end
             oj(neuron_hid_layerJ_with_bias)=1.0;
  
             for k=1:noutdim
                 sk(k)=wkj(k,:)*oj;
-                ok(k)=Activation(sk(k));    % signmoid
+                ok(k)=Activation(sk(k),method);    % signmoid
             end
 
             %error=error+ (dk-ok)' *(dk-ok)/2;
@@ -58,7 +58,7 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
     % Backward learning:
 
             for k=1:noutdim
-               deltak(k)=(dk(k)-ok(k))*deActivation(ok(k)); % gradient term
+               deltak(k)=(dk(k)-ok(k))*deActivation(ok(k),method); % gradient term
             end
 
             for j=1:neuron_hid_layerJ_with_bias
@@ -73,7 +73,7 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
                for k=1:noutdim
                   sumback(j)=sumback(j)+deltak(k)*wkj(k,j);
                end
-               deltaj(j)=deActivation(oj(j))*sumback(j);
+               deltaj(j)=deActivation(oj(j),method)*sumback(j);
             end
 
 
@@ -94,10 +94,18 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
     end
 end
 
-function o = Activation(s)
-    o = Sigmoid(s);
+function o = Activation(s,method)
+    if method == 1
+        o = Sigmoid(s);
+    else
+        o = ReLu(s);
+    end
 end
 
-function o = deActivation(s)
-    o = deSigmoid(s);
+function o = deActivation(s,method)
+    if method == 1
+        o = deSigmoid(s);
+    else
+        o = deReLu(s);
+    end
 end
