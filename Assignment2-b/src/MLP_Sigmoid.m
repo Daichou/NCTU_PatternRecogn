@@ -72,6 +72,7 @@ colormap(gray)                                  % set to grayscale
 for i = 1:100
     subplot(10,10,i)
     digit = reshape(x_train(:,i), 28,28)';    % row = 28 x 28 image
+    digit = permute(digit,[2 1 3]);
     imagesc(digit)                              % show the image
 end
 saveas(fig_train,strcat(file_text,'_train.jpg'));
@@ -83,6 +84,7 @@ colormap(gray)                                  % set to grayscale
 for i = 1:100
     subplot(10,10,i)
     digit = reshape(x_test(:,i), 28,28)';    % row = 28 x 28 image
+    digit = permute(digit,[2 1 3]);
     imagesc(digit)                              % show the image
     if y_test(i,1) == result_r(i)
         title_str = sprintf('desire:%d,pred:%d,True',y_test(i,1),result_r(i));
