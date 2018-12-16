@@ -17,17 +17,24 @@ end
 
 data = cat(2,x_train_list,y_train_list);
 
+test_size = size(y_train);
+test_size = train_size(1);
+
+x_test_list = x_test.';
+y_test_list = zeros(test_size,10);
+
+data = cat(2,x_train_list,y_train_list);
 layer = [200];
 n_input = 60000;
 n_output = 10;
-itermax = 100000;
+itermax = 1;
 eta = 0.1;
 beta = 0.09;
 Lowerlimit = 0.001;
 title_text = sprintf('Sigmoid ABIJK: %d X %d X %d \n iter = %d, eta = %f, beta = %f',n_input,layer(1),n_output,itermax,eta,beta);
 file_text = sprintf('Sigmoid_ABIJK_%dX%dX%d_iter_%d_eta_%f_beta_%f',n_input,layer(1),n_output,itermax,eta,beta);
 
-[wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,784,10,itermax,Lowerlimit);
+[wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,784,10,itermax,Lowerlimit);
 
 
 fig_error = figure(1);
@@ -39,3 +46,23 @@ xlabel('iteration');
 ylabel('error');
 saveas(fig_error,strcat(file_text,'_error.jpg'));
 saveas(fig_error,strcat(file_text,'_error.fig'));
+
+fig_time = figure(2);
+hold on;
+
+plot(time_r, error_r);
+title(title_text);
+xlabel('time');
+ylabel('error');
+saveas(fig_error,strcat(file_text,'_terror.jpg'));
+saveas(fig_error,strcat(file_text,'_terror.fig'));
+
+for ix=1:1:10000
+    oi = single([x_test_list(ix,1:784) 1].');
+    ok = FeedFoward_IJK(wji,wkj,oi,784,10,layer);
+    [M,I] = max(ok);
+    result_r(ix) = I;
+end
+
+Confu = confusionmat(y_test_list, result_r);
+confusionchart(Confu);

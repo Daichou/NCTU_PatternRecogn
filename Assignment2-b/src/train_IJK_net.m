@@ -1,4 +1,4 @@
-function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,itermax,Lowerlimit)
+function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,output,itermax,Lowerlimit)
     nvectors=length(data);
     ninpdim_with_bias=input+1;
     neuron_hid_layerJ=layer(1);
@@ -30,6 +30,8 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
     deltak = zeros(1,noutdim);
     deltaj = zeros(1,neuron_hid_layerJ_with_bias);
     sumback = zeros(1,neuron_hid_layerJ_with_bias);
+    
+    init_time = cputime;
 
     while (error_avg > Lowerlimit) && (iter<itermax)
         iter=iter+1;
@@ -84,10 +86,11 @@ function [wkj,wji,error_r,ite] = train_IJK_net(data,eta,beta,layer,input,output,
              wkj = wkj_tmp;
 
         end
-     
+        
         ite(iter)=iter;
         error_avg=error/nvectors;
         error_r(iter)=error_avg;
+        time_r(iter)=cputime-init_time;
     end
 end
 
