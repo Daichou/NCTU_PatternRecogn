@@ -37,9 +37,11 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
         iter=iter+1;
         error=0;
     % Forward Computation:
+        data_index = randperm(length(data));
         for ivector=1:nvectors
-            oi=single([data(ivector,1:input) 1]');
-            dk=single([data(ivector,input+1:input+output)]');
+            rvector = data_index(ivector);
+            oi=single([data(rvector,1:input) 1]');
+            dk=single([data(rvector,input+1:input+output)]');
 
             for j=1:neuron_hid_layerJ
                 sj(j)=wji(j,:)*oi;
