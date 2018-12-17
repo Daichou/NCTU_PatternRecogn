@@ -23,6 +23,7 @@ y_output = [data(:,28*28+1:28*28+10)];
 x_input = x_input.';
 y_output = y_output.';
 
+
 net = feedforwardnet([25]);
 net.trainParam.lr = 0.2;
 net.trainParam.epochs = 10;
@@ -32,6 +33,7 @@ net.trainParam.goal = 0.01;
 %net.divideParam.valRatio= 0;
 %net.divideParam.testRatio=0;
 net = train(net,single(x_input),single(y_output));
+
 view(net);
 
 for ix=1:1:10000
