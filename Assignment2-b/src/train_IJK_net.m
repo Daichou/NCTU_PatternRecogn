@@ -30,7 +30,7 @@ function [wkj,wji,error_r,ite,time_r] = train_IJK_net(data,eta,beta,layer,input,
     deltak = zeros(1,noutdim);
     deltaj = zeros(1,neuron_hid_layerJ_with_bias);
     sumback = zeros(1,neuron_hid_layerJ_with_bias);
-    
+
     init_time = cputime;
 
     while (error_avg > Lowerlimit) && (iter<itermax)
