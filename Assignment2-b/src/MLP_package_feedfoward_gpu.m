@@ -31,16 +31,16 @@ layer = [25];
 n_input = 28*28;
 n_output = 10;
 
-lr = 0.2;
-epochs = 100;
+lr = 0.02;
+epochs = 1000;
 
 title_text = sprintf('FeedFoward IJK: %d X %d X %d \n epoch = %d, lr = %f',n_input,layer(1),n_output,epochs,lr);
 file_text = sprintf('FeedFOward_IJK_%dX%dX%d_epochs_%d_lr_%f',n_input,layer(1),n_output,epochs,lr);
 
 net = feedforwardnet(layer);
 net.trainFcn = 'trainscg';
-net.trainParam.lr = 0.2;
-net.trainParam.epochs = 100;
+net.trainParam.lr = lr;
+net.trainParam.epochs = epochs;
 net.trainParam.goal = 0.001;
 net.divideFcn= 'dividerand';
 net.divideParam.trainRatio= 1;
@@ -59,7 +59,7 @@ y_test_result = net2(x_test_list_gpu,'showResources','yes');
 y_test_label = gpu2nndata(y_test_result);
 
 for ix=1:1:10000
-    [M,I] = max(y_test_label(ix));
+    [M,I] = max(y_test_label(:,ix));
     result_r(ix) = I-1;
 end
 
@@ -96,7 +96,7 @@ saveas(fig_train,strcat(file_text,'_test.fig'));
 fig_confu = figure(3)
 set(fig_confu, 'Position', get(0, 'Screensize'));
 Confu = confusionmat(single(y_test), single(result_r.'));
-confusionchart(single(y_test), single(result_r.'),'Title','Sigmoid Confusion Matrix', ...
+confusionchart(single(y_test), single(result_r.'),'Title','FeedFoward Confusion Matrix', ...
     'RowSummary','row-normalized', ...
     'ColumnSummary','column-normalized');
 saveas(fig_confu,strcat(file_text,'_conf.jpg'));

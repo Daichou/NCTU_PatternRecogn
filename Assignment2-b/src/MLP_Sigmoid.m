@@ -56,8 +56,8 @@ plot(time_r, error_r);
 title(title_text);
 xlabel('time');
 ylabel('error');
-saveas(fig_error,strcat(file_text,'_terror.jpg'));
-saveas(fig_error,strcat(file_text,'_terror.fig'));
+saveas(fig_time,strcat(file_text,'_terror.jpg'));
+saveas(fig_time,strcat(file_text,'_terror.fig'));
 
 for ix=1:1:10000
     oi = single([x_test_list(ix,1:784) 1].');
@@ -95,8 +95,8 @@ for i = 1:100
     title(title_str)                    % show the label
 end
 
-saveas(fig_train,strcat(file_text,'_test.jpg'));
-saveas(fig_train,strcat(file_text,'_test.fig'));
+saveas(fig_test,strcat(file_text,'_test.jpg'));
+saveas(fig_test,strcat(file_text,'_test.fig'));
 fig_confu = figure(5)
 set(fig_confu, 'Position', get(0, 'Screensize'));
 Confu = confusionmat(single(y_test), single(result_r.'));
