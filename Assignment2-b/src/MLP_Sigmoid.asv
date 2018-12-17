@@ -106,19 +106,9 @@ confusionchart(single(y_test), single(result_r.'),'Title','Sigmoid Confusion Mat
 saveas(fig_confu,strcat(file_text,'_conf.jpg'));
 saveas(fig_confu,strcat(file_text,'_conf.fig'));
 
-for ix=1:1:60000
+for ix=1:1:10000
     oi = single([x_train_list(ix,1:784) 1].');
     ok = FeedFoward_IJK(wji,wkj,oi,784,10,layer,method);
     [M,I] = max(ok);
     result_tr(ix) = I-1;
 end
-
-fig_confu2 = figure(6)
-set(fig_confu2, 'Position', get(0, 'Screensize'));
-Confu = confusionmat(single(y_train), single(result_tr.'));
-confusionchart(single(y_train), single(result_tr.'),'Title','Sigmoid Confusion Matrix', ...
-    'RowSummary','row-normalized', ...
-    'ColumnSummary','column-normalized');
-saveas(fig_confu2,strcat(file_text,'_conf_train.jpg'));
-saveas(fig_confu2,strcat(file_text,'_conf_train.fig'));
-
