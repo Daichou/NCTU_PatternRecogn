@@ -22,18 +22,16 @@ x_input = [data(:,1:28*28)];
 y_output = [data(:,28*28+1:28*28+10)];
 x_input = x_input.';
 y_output = y_output.';
-layers = [
-    imageInputLayer([28 28 1])
-    reluLayer
-    reluLayer
-    fullyConnectedLayer(10)
-    softmaxLayer
-    classificationLayer];
-options = trainingOptions( 'sgdm',...
-    'MiniBatchSize', miniBatchSize,...
-    'Plots', 'training-progress');
-net = trainNetwork(x_train, y_train, layers, options);
 
+net = feedforwardnet([25]);
+net.trainParam.lr = 0.2;
+net.trainParam.epochs = 100;
+net.trainParam.goal = 0.001;
+net.divideFcn= 'dividerand';
+net.divideParam.trainRatio= 1;
+net.divideParam.valRatio= 0;
+net.divideParam.testRatio=0;
+net = train(net,single(x_input),single(y_output));
 view(net);
 
 for ix=1:1:10000
