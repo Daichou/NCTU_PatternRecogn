@@ -24,10 +24,10 @@ x_test_list = x_test.';
 y_test_list = zeros(test_size,10);
 
 data = cat(2,x_train_list,y_train_list);
-layer = [50];
+layer = [25];
 n_input = 60000;
 n_output = 10;
-itermax = 40;
+itermax = 100;
 eta = 0.1;
 beta = 0.09;
 Lowerlimit = 0.001;
