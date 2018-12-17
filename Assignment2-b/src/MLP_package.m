@@ -25,12 +25,12 @@ y_output = y_output.';
 
 net = feedforwardnet([25]);
 net.trainParam.lr = 0.2;
-net.trainParam.epochs = 100;
-net.trainParam.goal = 0.001;
-net.divideFcn= 'dividerand';
-net.divideParam.trainRatio= 1;
-net.divideParam.valRatio= 0;
-net.divideParam.testRatio=0;
+net.trainParam.epochs = 10;
+net.trainParam.goal = 0.01;
+%net.divideFcn= 'dividerand';
+%net.divideParam.trainRatio= 1;
+%net.divideParam.valRatio= 0;
+%net.divideParam.testRatio=0;
 net = train(net,single(x_input),single(y_output));
 view(net);
 
