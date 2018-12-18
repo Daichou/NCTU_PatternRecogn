@@ -16,18 +16,15 @@ y_train_list = zeros(train_size,10);
 for ix=1:1:train_size
     y_train_list(ix,y_train(ix,1)+1) = 1;
 end
-data = cat(2,x_train_list,y_train_list);
 
-x_input = [data(:,1:28*28)];
-y_output = [data(:,28*28+1:28*28+10)];
-x_input = x_input.';
-y_output = y_output.';
+x_input = x_train_list.';
+y_output = y_train_list.';
 
-layer = [300];
+layer = [25];
 
 net = feedforwardnet([layer]);
-lr = 0.05;
-epochs = 10;
+lr = 0.01;
+epochs = 100;
 mc = 0.9;
 title_text = sprintf('Pacakge: 784 X %d X 10 \n epochs = %d, lr = %f, mc %f',layer(1),epochs,lr,mc);
 file_text = sprintf('Package_784X%dX10_epochs_%d_lr_%f_mc_%f',layer(1),epochs,lr,mc);
@@ -36,22 +33,26 @@ net.trainParam.lr = lr;
 net.trainParam.epochs = epochs;
 net.trainParam.goal = 0;
 net.trainParam.mc = mc;
-net.divideFcn= 'dividerand';
+%net.divideFcn= 'dividerand';
 net.divideParam.trainRatio= 1;
 net.divideParam.valRatio= 0;
 net.divideParam.testRatio=0;
 net.trainFcn = 'traingdm';
-net.output.processFcns = {'mapminmax'};
-net.input.processFcns = {'mapminmax'};
+net.layers{1}.transferFcn = 'tansig';
+net.layers{2}.transferFcn = 'tansig';
+%net.output.processFcns = {'mapminmax'};
+%net.input.processFcns = {'mapminmax'};
 net = train(net,single(x_input),single(y_output));
 
 view(net);
 
 x_test_list = x_test.';
+result_ok=zeros(10,10000);
 
 for ix=1:1:10000
     oi = single([x_test_list(ix,1:784).']);
     ok = net(oi);
+    result_ok(:,ix) = ok;
     [M,I] = max(ok);
     result_r(ix) = I-1;
 end
@@ -95,18 +96,18 @@ confusionchart(single(y_test), single(result_r.'),'Title','Package Confusion Mat
 saveas(fig_confu,strcat(file_text,'_conf.jpg'));
 saveas(fig_confu,strcat(file_text,'_conf.fig'));
 
-for ix=1:1:60000
-    oi = single([x_train_list(ix,1:784)].');
-    ok = net(oi);
-    [M,I] = max(ok);
-    result_tr(ix) = I-1;
-end
-
-fig_confu2 = figure(6)
-set(fig_confu2, 'Position', get(0, 'Screensize'));
-Confu = confusionmat(single(y_train), single(result_tr.'));
-confusionchart(single(y_train), single(result_tr.'),'Title','Sigmoid Confusion Matrix', ...
-    'RowSummary','row-normalized', ...
-    'ColumnSummary','column-normalized');
-saveas(fig_confu2,strcat(file_text,'_conf_train.jpg'));
-saveas(fig_confu2,strcat(file_text,'_conf_train.fig'));
+%for ix=1:1:60000
+%    oi = single([x_train_list(ix,1:784)].');
+%    ok = net(oi);
+%    [M,I] = max(ok);
+%    result_tr(ix) = I-1;
+%end
+%
+%fig_confu2 = figure(6)
+%set(fig_confu2, 'Position', get(0, 'Screensize'));
+%Confu = confusionmat(single(y_train), single(result_tr.'));
+%confusionchart(single(y_train), single(result_tr.'),'Title','Sigmoid Confusion Matrix', ...
+%    'RowSummary','row-normalized', ...
+%    'ColumnSummary','column-normalized');
+%saveas(fig_confu2,strcat(file_text,'_conf_train.jpg'));
+%saveas(fig_confu2,strcat(file_text,'_conf_train.fig'));
