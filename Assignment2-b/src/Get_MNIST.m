@@ -14,5 +14,5 @@ function images = Get_MNIST(filename)
     fclose(fp);
 
     images = reshape(images, numCols*numRows, numImages);
-    images = uint8(images)/255 ;
+    images = double(images)/255 ;
 end

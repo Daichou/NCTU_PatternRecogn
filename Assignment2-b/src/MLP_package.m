@@ -1,9 +1,9 @@
 clear all;
 
 x_train = Get_MNIST('train-images-idx3-ubyte');
-y_train = uint8(Get_MNISTLABEL('train-labels-idx1-ubyte'));
+y_train = Get_MNISTLABEL('train-labels-idx1-ubyte');
 x_test = Get_MNIST('t10k-images-idx3-ubyte');
-y_test = uint8(Get_MNISTLABEL('t10k-labels-idx1-ubyte'));
+y_test = Get_MNISTLABEL('t10k-labels-idx1-ubyte');
 
 x_train_list = x_train.';
 
@@ -11,7 +11,7 @@ train_size = size(y_train);
 train_size = train_size(1);
 
 x_train_list = x_train.';
-y_train_list = zeros(train_size,10);
+y_train_list = int32(zeros(train_size,10));
 
 for ix=1:1:train_size
     y_train_list(ix,y_train(ix,1)+1) = 1;
@@ -20,11 +20,11 @@ end
 x_input = x_train_list.';
 y_output = y_train_list.';
 
-layer = [25];
+layer = [150];
 
 net = feedforwardnet([layer]);
-lr = 0.01;
-epochs = 100;
+lr = 0.0001;
+epochs = 2000;
 mc = 0.9;
 title_text = sprintf('Pacakge: 784 X %d X 10 \n epochs = %d, lr = %f, mc %f',layer(1),epochs,lr,mc);
 file_text = sprintf('Package_784X%dX10_epochs_%d_lr_%f_mc_%f',layer(1),epochs,lr,mc);
@@ -33,28 +33,36 @@ net.trainParam.lr = lr;
 net.trainParam.epochs = epochs;
 net.trainParam.goal = 0;
 net.trainParam.mc = mc;
-%net.divideFcn= 'dividerand';
+net.divideFcn= 'dividerand';
 net.divideParam.trainRatio= 1;
 net.divideParam.valRatio= 0;
 net.divideParam.testRatio=0;
-net.trainFcn = 'traingdm';
-net.layers{1}.transferFcn = 'tansig';
-net.layers{2}.transferFcn = 'tansig';
-%net.output.processFcns = {'mapminmax'};
-%net.input.processFcns = {'mapminmax'};
-net = train(net,single(x_input),single(y_output));
+net.trainFcn = 'traingdx';
+net.performParam.normalization = 'standard';
+net.layers{1}.transferFcn = 'logsig';
+%net.layers{2}.transferFcn = 'logsig';
+net.output.processFcns = {'mapminmax'};
+net.input.processFcns = {'mapminmax'};
+net = train(net,x_input,y_output);
 
 view(net);
 
 x_test_list = x_test.';
 result_ok=zeros(10,10000);
 
+%for ix=1:1:10000
+%    oi = single([x_test_list(ix,1:784).']);
+%    ok = net(oi);
+%    result_ok(:,ix) = ok;
+%    [M,I] = max(ok);
+%    result_r(ix) = I-1;
+%end
+
+y_pred_label = sim(net,x_test_list.');
+
 for ix=1:1:10000
-    oi = single([x_test_list(ix,1:784).']);
-    ok = net(oi);
-    result_ok(:,ix) = ok;
-    [M,I] = max(ok);
-    result_r(ix) = I-1;
+    [M,I] = max(y_pred_label(:,ix));
+    result_r(ix) = I - 1;
 end
 
 fig_train = figure(1)                                          % plot images
