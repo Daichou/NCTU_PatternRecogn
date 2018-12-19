@@ -24,7 +24,7 @@ x_test_list = x_test.';
 y_test_list = zeros(test_size,10);
 
 data = cat(2,x_train_list,y_train_list);
-layer = [25];
+layer = [100];
 n_input = 60000;
 n_output = 10;
 itermax = 100;
