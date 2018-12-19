@@ -93,8 +93,8 @@ for i = 1:100
     title(title_str)                    % show the label
 end
 
-saveas(fig_train,strcat(file_text,'_test.jpg'));
-saveas(fig_train,strcat(file_text,'_test.fig'));
+saveas(fig_test,strcat(file_text,'_test.jpg'));
+saveas(fig_test,strcat(file_text,'_test.fig'));
 fig_confu = figure(3)
 set(fig_confu, 'Position', get(0, 'Screensize'));
 Confu = confusionmat(single(y_test), single(result_r.'));
