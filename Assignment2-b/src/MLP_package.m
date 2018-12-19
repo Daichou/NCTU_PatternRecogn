@@ -20,11 +20,11 @@ end
 x_input = x_train_list.';
 y_output = y_train_list.';
 
-layer = [150];
+layer =[20];
 
 net = feedforwardnet([layer]);
 lr = 0.0001;
-epochs = 2000;
+epochs = 1000;
 mc = 0.9;
 title_text = sprintf('Pacakge: 784 X %d X 10 \n epochs = %d, lr = %f, mc %f',layer(1),epochs,lr,mc);
 file_text = sprintf('Package_784X%dX10_epochs_%d_lr_%f_mc_%f',layer(1),epochs,lr,mc);
@@ -119,3 +119,4 @@ saveas(fig_confu,strcat(file_text,'_conf.fig'));
 %    'ColumnSummary','column-normalized');
 %saveas(fig_confu2,strcat(file_text,'_conf_train.jpg'));
 %saveas(fig_confu2,strcat(file_text,'_conf_train.fig'));
+trace(Confu)
