@@ -86,9 +86,9 @@ for i = 1:100
     digit = permute(digit,[2 1 3]);
     imagesc(digit)                              % show the image
     if y_test(i,1) == result_r(i)
-        title_str = sprintf('desire:%d,pred:%d,True',y_test(i,1),result_r(i));
+        title_str = sprintf('desire:%d,pred:%d,T',y_test(i,1),result_r(i));
     else
-        title_str = sprintf('desire:%d,pred:%d,False',y_test(i,1),result_r(i));
+        title_str = sprintf('desire:%d,pred:%d,F',y_test(i,1),result_r(i));
     end
     title(title_str)                    % show the label
 end
