@@ -103,10 +103,17 @@ imgSize = imgSize(1:2);
 for i=1:1:12
     fig_conv(i+2) = figure(i+2)
     act1 = activations(net,im,net.Layers(i).Name);
-    act1ch32 = act1(:,:,1);
-    act1ch32 = mat2gray(act1ch32);
-    act1ch32 = imresize(act1ch32,imgSize);
-    I = imtile({im,act1ch32});
+    sz = size(act1);
+
+    if (length(sz) < 3)
+        act1ch32 = act1(:,:,1);
+        act1ch32 = mat2gray(act1ch32);
+        act1ch32 = imresize(act1ch32,imgSize);
+        I = imtile({im,act1ch32});
+    else
+        act1 = reshape(act1,[sz(1) sz(2) 1 sz(3)]);
+        I = imtile(imresize(mat2gray(act1),[48 48]));
+    end
     imshow(I)
     name = net.Layers(i).Name;
     title_str = sprintf('layer%d_%s_Features',i,name);
