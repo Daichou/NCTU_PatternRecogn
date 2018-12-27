@@ -27,7 +27,6 @@ layers = [
     
     maxPooling2dLayer(2,'Stride',2,'Name','Mpool_2')
     
-    
     fullyConnectedLayer(10,'Name','fc')
     softmaxLayer('Name','softmax')
     classificationLayer('Name','output')];
@@ -37,7 +36,7 @@ plot(lgraph);
 
 options = trainingOptions(...
     'sgdm',...
-    'MaxEpochs', 5, ...
+    'MaxEpochs', 1, ...
     'MiniBatchSize', 128,...
     'InitialLearnRate', 0.1,...
     'ExecutionEnvironment', 'auto',...
@@ -63,28 +62,57 @@ for i=1:size(tsDes,1)
     tpDes(tsDes(i)+1,i)=1;
 end
 
-% ConfMat
-[Mout,Iout]=max(tsOut);%value,index
-[Mdes,Ides]=max(tpDes);
-ConfMat=zeros(n_class,n_class);
-c=0;%check how many wrong
-for i=1:size(tsDes,1)
-    if(Ides(i)~=Iout(i))
-        c=c+1;
-    end
-    % ConfMat(i,j) num of should be i, but be j
 
-    ConfMat(Ides(i),Iout(i))=ConfMat(Ides(i),Iout(i))+1;
-end
-
-figure
+fig_confu = figure(1)
+set(fig_confu, 'Position', get(0, 'Screensize'));
 
 plotconfusion(tpDes,tsOut)
+saveas(fig_confu,strcat('CNN_confu.jpg'));
+saveas(fig_confu,strcat('CNN_confu.fig'));
+
+fig_predict = figure(2)
+set(fig_predict, 'Position', get(0, 'Screensize'));
+tickCell = {'XTickLabel',{},'YTickLabel',{},'XTick',{}, 'YTick',{}};
+
+for i = 1:150
+    subplot(15,10,i)
+    digit = tsInput(:,:,:,i);    % row = 28 x 28 image
+    %digit = permute(digit,[2 1 3]);
+    imagesc(digit)                              % show the image
+    [M,true_index] = max(tsOut(:,i));
+    [M,pred_index] = max(tpDes(:,i));
+    pred_index = pred_index - 1;
+    true_index = true_index - 1;
+    if  pred_index == true_index
+        title_str = sprintf('des:%d,pred:%d,T',true_index,pred_index);
+    else
+        title_str = sprintf('des:%d,pred:%d,F',true_index,pred_index);
+    end
+    title(title_str,'FontSize',10)                    % show the label
+    set(gca,tickCell{:});
+end
+
+saveas(fig_predict,strcat('CNN_predict.jpg'));
+saveas(fig_predict,strcat('CNN_predict.fig'));
 
 
+im = trInput(:,:,:,1);
+imgSize = size(im);
+imgSize = imgSize(1:2);
 
-
-
-
-
+for i=1:1:12
+    fig_conv(i+2) = figure(i+2)
+    act1 = activations(net,im,net.Layers(i).Name);
+    act1ch32 = act1(:,:,1);
+    act1ch32 = mat2gray(act1ch32);
+    act1ch32 = imresize(act1ch32,imgSize);
+    I = imtile({im,act1ch32});
+    imshow(I)
+    name = net.Layers(i).Name;
+    title_str = sprintf('layer%d_%s_Features',i,name);
+    title(['Layer ',name,' Features'])
+    saveas(fig_conv(i+2),strcat(title_str,'.jpg'));
+    saveas(fig_conv(i+2),strcat(title_str,'.fig'));
+    i = i +1;
+end
 
