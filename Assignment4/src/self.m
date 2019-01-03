@@ -18,18 +18,51 @@ layer2_filter_num = 12;
 filter_size = 5;
 num_class = 10;
 pooling2_size = layer2_filter_num*16;
+image_size = 28;
 
 b1_layer = zeros(layer1_filter_num,1);
-b2_layer = zeros(layer1_filter_num,layer2_filter_num);
+b2_layer = zeros(layer2_filter_num,1);
 k1_layer = rand(layer1_filter_num,filter_size,filter_size)*sqrt(layer1_filter_num/((1+layer1_filter_num)*filter_size*filter_size));
 k2_layer = rand(layer1_filter_num,layer2_filter_num,filter_size,filter_size)*sqrt(layer1_filter_num/((layer2_filter_num+layer1_filter_num)*filter_size*filter_size));
 FC_W = rand(num_class,pooling2_size)*sqrt(layer1_filter_num/(pooling2_size+num_class));
 FC_b = zeros(num_class,1);
+conv_1 = zeros(layer1_filter_num,(image_size+1-filter_size),(image_size+1-filter_size));
+conv_2 = zeros(layer2_filter_num,(image_size+2-filter_size*2),(image_size+2-filter_size*2));
+S1_layer = zeros(layer1_filter_num,(image_size+1-filter_size)/2,(image_size+1-filter_size)/2);
+S2_layer = zeros(layer2_filter_num,(image_size+2-filter_size*2)/2,(image_size+2-filter_size*2)/2);
+
+
+for number_of_input=1:1000
+    input_image = trInput(number_of_input);
+    input_label = trDes(number_of_input);
+    for l1_N=1:layer1_filter_num
+        conv_1(l1_N,:,:) = Sigmoid(conv2(input_image,k1_layer(l1_N), 'valid')+b1_layer(l1_N));
+    end
+    % max pooling
+    for l1_N=1:layer1_filter_num
+        tmp = conv2(conv_1(l1_N,:,:),ones(2)/k^2, 'valid');
+        S1_layer(l1_N,:,:) = tmp(1:2:end,1:2:end);
+    end
+
+    for l2_N=1:layer2_filter_num
+        tmp_sum = zeros((image_size+2-filter_size*2),(image_size+2-filter_size*2));
+        for l1_N=1:layer1_filter_num
+            tmp_sum = tmp_sum + conv2(conv_1(l1_N,:,:),k2_layer(l1_N,l2_N), 'valid');
+        end
+        conv_2(l2_N,:,:) = Sigmoid(tmp_sum+b2_layer(l2_N));
+    end
+    % max pooling
+    for l2_N=1:layer2_filter_num
+        tmp = conv2(conv_2(l2_N,:,:),ones(2)/k^2, 'valid');
+        S2_layer(f_N,:,:) = tmp(1:2:end,1:2:end);
+    end
+
+    %vectorization
+end
 
 tsOutput= classify(net,tsInput);
 tsOutput=tsOutput(1:numel(tsT));
 accuracy = sum(tsOutput == tsT)/numel(tsT);
-11
 % categorical to matrix
 
 tsOut=zeros(n_class,size(tsDes,1));
