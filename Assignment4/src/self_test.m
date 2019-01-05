@@ -23,14 +23,14 @@ pooling2_size = layer2_filter_num*16;
 image_size = 28;
 conv_1_size = image_size+1-filter_size;
 conv_2_size = (image_size+1-filter_size)/2 + 1 -filter_size;
-pool_1_size = conv_1_size/2;
-pool_2_size = conv_2_size/2;
+pool_1_size = ceil(conv_1_size/2);
+pool_2_size = ceil(conv_2_size/2);
 
 b1_layer = zeros(layer1_filter_num,1);
 b2_layer = zeros(layer2_filter_num,1);
-k1_layer = rand(layer1_filter_num,filter_size,filter_size)*sqrt(layer1_filter_num/((1+layer1_filter_num)*filter_size*filter_size));
-k2_layer = rand(layer1_filter_num,layer2_filter_num,filter_size,filter_size)*sqrt(layer1_filter_num/((layer2_filter_num+layer1_filter_num)*filter_size*filter_size));
-FC_W = rand(num_class,pooling2_size)*sqrt(layer1_filter_num/(pooling2_size+num_class));
+k1_layer = (rand(layer1_filter_num,filter_size,filter_size)-0.5)*2*sqrt(layer1_filter_num/((1+layer1_filter_num)*filter_size*filter_size));
+k2_layer = (rand(layer1_filter_num,layer2_filter_num,filter_size,filter_size)-0.5)*2*sqrt(layer1_filter_num/((layer2_filter_num+layer1_filter_num)*filter_size*filter_size));
+FC_W = (rand(num_class,pooling2_size)-0.5)*2*sqrt(layer1_filter_num/(pooling2_size+num_class));
 FC_b = zeros(num_class,1);
 conv_1 = zeros(layer1_filter_num,conv_1_size,conv_1_size);
 conv_2 = zeros(layer2_filter_num,layer1_filter_num,conv_2_size,conv_2_size);
@@ -62,55 +62,57 @@ input_label = trDes(1);
 y_one_hot = zeros( num_class, 1 );
 y_one_hot( input_label+1 ) = 1;
 
-for l1_N=1:layer1_filter_num
-    conv_1(l1_N,:,:) = conv2(input_image,squeeze(k1_layer(l1_N,:,:)), 'valid');
-    sigmoid_1(l1_N,:,:) = Sigmoid(conv_1(l1_N,:,:)+b1_layer(l1_N));
+for iter=1:100
+for p=1:layer1_filter_num
+    conv_1(p,:,:) = conv2(input_image,squeeze(k1_layer(p,:,:)), 'valid');
+    sigmoid_1(p,:,:) = Sigmoid(conv_1(p,:,:)+b1_layer(p));
 end
 % max pooling
-for l1_N=1:layer1_filter_num
-    %tmp = conv2(squeeze(sigmoid_1(l1_N,:,:)),ones(2)/conv_1_size^2, 'valid');
-    %S1_layer(l1_N,:,:) = tmp(1:2:end,1:2:end);
-    tmp = squeeze(sigmoid_1(l1_N,:,:));
+for p=1:layer1_filter_num
+    %tmp = conv2(squeeze(sigmoid_1(p,:,:)),ones(2)/conv_1_size^2, 'valid');
+    %S1_layer(p,:,:) = tmp(1:2:end,1:2:end);
+    tmp = squeeze(sigmoid_1(p,:,:));
     for i = 1:pool_1_size
         max_val = -1;
         for j = 1:pool_1_size
             iv = (i-1)*2 + 1;
             jv = (j-1)*2 + 1;
-            S1_layer(l1_N,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+            %S1_layer(p,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+            S1_layer(p,i,j) = (tmp(iv,jv) + tmp(iv,jv+1) + tmp(iv+1,jv) + tmp(iv+1,jv+1))/4;
         end
     end
 end
 
-for l2_N=1:layer2_filter_num
+for q=1:layer2_filter_num
     tmp_sum = zeros(conv_2_size,conv_2_size);
-    for l1_N=1:layer1_filter_num
-        conv_2(l2_N,l1_N,:,:) = conv2(squeeze(S1_layer(l1_N,:,:)),squeeze(k2_layer(l1_N,l2_N,:,:)), 'valid');
-        tmp_sum = tmp_sum + squeeze(conv_2(l2_N,l1_N,:,:));
+    for p=1:layer1_filter_num
+        conv_2(q,p,:,:) = conv2(squeeze(S1_layer(p,:,:)),squeeze(k2_layer(p,q,:,:)), 'valid');
+        tmp_sum = tmp_sum + squeeze(conv_2(q,p,:,:));
     end
-    sigmoid_2(l2_N,:,:) = Sigmoid(tmp_sum+b2_layer(l2_N));
+    sigmoid_2(q,:,:) = Sigmoid(tmp_sum+b2_layer(q));
 end
 % max pooling
-for l2_N=1:layer2_filter_num
+for q=1:layer2_filter_num
     %tmp = conv2(squeeze(sigmoid_2(l2_N,:,:)),ones(2)/conv_2_size^2, 'valid');
     %S2_layer(l2_N,:,:) = tmp(1:2:end,1:2:end);
-    tmp = squeeze(sigmoid_2(l2_N,:,:));
+    tmp = squeeze(sigmoid_2(q,:,:));
     for i = 1:pool_2_size
         max_val = -1;
         for j = 1:pool_2_size
             iv = (i-1)*2 + 1;
             jv = (j-1)*2 + 1;
-            S2_layer(l1_N,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+            %S2_layer(q,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+            S2_layer(q,i,j) = (tmp(iv,jv) + tmp(iv,jv+1) + tmp(iv+1,jv) + tmp(iv+1,jv+1))/4;
         end
     end
 end
 
 %vectorization
 fv = [];
-for l2_N=1:layer2_filter_num
-    sa = size(S2_layer(l2_N,:,:));
-    fv = [fv; reshape(S2_layer(l2_N,:,:), sa(2)*sa(3), sa(1))];
+for q=1:layer2_filter_num
+    sa = size(S2_layer(q,:,:));
+    fv = [fv; reshape(S2_layer(q,:,:), sa(2)*sa(3), sa(1))];
 end
-
 %fully conected layer
 FC_layer = Sigmoid(FC_W*fv + FC_b);
 Loss_list = (FC_layer - y_one_hot);
@@ -193,6 +195,7 @@ end
 for n = 1:num_class
     FC_W(n) = FC_W(n) - learning_rate * delta_W(n);
     FC_b(n) = FC_b(n) - learning_rate * delta_B(n);
+end
 end
 
 fig_conv(1) = figure(1)
