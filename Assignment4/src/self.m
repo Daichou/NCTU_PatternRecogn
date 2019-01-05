@@ -13,7 +13,8 @@ tsInput = tsInput(:,:,:,1:1000);
 trDes = trDes(1:1000);
 tsDes = tsDes(1:1000);
 
-learning_rate = 0.2;
+learning_rate = 0.4;
+iteration = 30;
 
 layer1_filter_num = 6;
 layer2_filter_num = 12;
@@ -56,7 +57,7 @@ delta_C1_sig = zeros(layer1_filter_num,conv_1_size,conv_1_size);
 
 init_time = cputime;
 
-for iter=1:10
+for iter=1:iteration
     Loss = 0;
     Correctness = 0;
     for number_of_input=1:1000
@@ -197,32 +198,86 @@ for iter=1:10
         FC_W = FC_W - learning_rate * delta_W;
         FC_b = FC_b - learning_rate * delta_B;
     end
-    ite(iter) = iter;
-    Loss_r(iter) = Loss/1000;
+    iter_r(iter) = iter;
+    loss_r(iter) = Loss/1000;
     acc_r(iter) = Correctness/1000;
     fprintf("Epochs: %d, Loss = %f, acc = %f\n",iter,Loss/1000,acc_r(iter))
     time_r(iter) = cputime-init_time;
 end
 
-tsOutput= classify(net,tsInput);
-tsOutput=tsOutput(1:numel(tsT));
-accuracy = sum(tsOutput == tsT)/numel(tsT);
-% categorical to matrix
+Correctness = 0;
+for number_of_input=1:1000
+    input_image = squeeze(tsInput(:,:,:,number_of_input));
+    input_label = tsDes(number_of_input);
+    % y is a vector of labels
+    y_one_hot = zeros( num_class, 1 );
+    y_one_hot( input_label+1 ) = 1;
 
-tsOut=zeros(n_class,size(tsDes,1));
-tpOut=grp2idx(tsOutput);
-tpDes=zeros(n_class,size(tsDes,1));
+    for p=1:layer1_filter_num
+        conv_1(p,:,:) = conv2(input_image,squeeze(k1_layer(p,:,:)), 'valid');
+        sigmoid_1(p,:,:) = Sigmoid(conv_1(p,:,:)+b1_layer(p));
+    end
+    % max pooling
+    for p=1:layer1_filter_num
+        %tmp = conv2(squeeze(sigmoid_1(p,:,:)),ones(2)/conv_1_size^2, 'valid');
+        %S1_layer(p,:,:) = tmp(1:2:end,1:2:end);
+        tmp = squeeze(sigmoid_1(p,:,:));
+        for i = 1:pool_1_size
+            max_val = -1;
+            for j = 1:pool_1_size
+                iv = (i-1)*2 + 1;
+                jv = (j-1)*2 + 1;
+                %S1_layer(p,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+                S1_layer(p,i,j) = (tmp(iv,jv) + tmp(iv,jv+1) + tmp(iv+1,jv) + tmp(iv+1,jv+1))/4;
+            end
+        end
+    end
 
-for i=1:size(tsDes,1)
-    tsOut(tpOut(i),i)=1;
-    tpDes(tsDes(i)+1,i)=1;
+    for q=1:layer2_filter_num
+        tmp_sum = zeros(conv_2_size,conv_2_size);
+        for p=1:layer1_filter_num
+            conv_2(q,p,:,:) = conv2(squeeze(S1_layer(p,:,:)),squeeze(k2_layer(p,q,:,:)), 'valid');
+            tmp_sum = tmp_sum + squeeze(conv_2(q,p,:,:));
+        end
+        sigmoid_2(q,:,:) = Sigmoid(tmp_sum+b2_layer(q));
+    end
+    % max pooling
+    for q=1:layer2_filter_num
+        %tmp = conv2(squeeze(sigmoid_2(l2_N,:,:)),ones(2)/conv_2_size^2, 'valid');
+        %S2_layer(l2_N,:,:) = tmp(1:2:end,1:2:end);
+        tmp = squeeze(sigmoid_2(q,:,:));
+        for i = 1:pool_2_size
+            max_val = -1;
+            for j = 1:pool_2_size
+                iv = (i-1)*2 + 1;
+                jv = (j-1)*2 + 1;
+                %S2_layer(q,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+                S2_layer(q,i,j) = (tmp(iv,jv) + tmp(iv,jv+1) + tmp(iv+1,jv) + tmp(iv+1,jv+1))/4;
+            end
+        end
+    end
+
+    %vectorization
+    fv = [];
+    for q=1:layer2_filter_num
+        sa = size(S2_layer(q,:,:));
+        fv = [fv; reshape(S2_layer(q,:,:), sa(2)*sa(3), sa(1))];
+    end
+    %fully conected layer
+    FC_layer = Sigmoid(FC_W*fv + FC_b);
+    Loss_list = (FC_layer - y_one_hot);
+
+    [M,I] = max(FC_layer);
+    if (I-1 == input_label)
+        Correctness = Correctness + 1;
+    end
+    tsOutput(number_of_input) = I-1;
 end
-
 
 fig_confu = figure(1)
 set(fig_confu, 'Position', get(0, 'Screensize'));
 
-plotconfusion(tpDes,tsOut)
+plotconfusion(categorical(tsDes),categorical(tsOutput.'))
 saveas(fig_confu,strcat('CNN_confu_1000.jpg'));
 saveas(fig_confu,strcat('CNN_confu_1000.fig'));
 
@@ -234,11 +289,10 @@ for i = 1:150
     subplot(15,10,i)
     digit = tsInput(:,:,:,i);    % row = 28 x 28 image
     %digit = permute(digit,[2 1 3]);
-    imagesc(digit)                              % show the image
-    [M,true_index] = max(tsOut(:,i));
-    [M,pred_index] = max(tpDes(:,i));
-    pred_index = pred_index - 1;
-    true_index = true_index - 1;
+    imagesc(digit)
+    true_index = tsDes(i);
+    pred_index = tsOutput(i);
+    % show the image
     if  pred_index == true_index
         title_str = sprintf('des:%d,pred:%d,T',true_index,pred_index);
     else
@@ -252,30 +306,92 @@ saveas(fig_predict,strcat('CNN_predict_1000.jpg'));
 saveas(fig_predict,strcat('CNN_predict_1000.fig'));
 
 
-im = trInput(:,:,:,1);
-imgSize = size(im);
-imgSize = imgSize(1:2);
 
-for i=1:1:12
-    fig_conv(i+2) = figure(i+2)
-    act1 = activations(net,im,net.Layers(i).Name);
-    sz = size(act1);
+fig_conv(1) = figure(3)
+act1 = squeeze(permute(conv_1,[2 3 1]));
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'conv_1';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(1),strcat('conv_1layer.jpg'));
+saveas(fig_conv(1),strcat('conv_1layer.fig'));
 
-    if (length(sz) < 3)
-        act1ch32 = act1(:,:,1);
-        act1ch32 = mat2gray(act1ch32);
-        act1ch32 = imresize(act1ch32,imgSize);
-        I = imtile({im,act1ch32});
-    else
-        act1 = reshape(act1,[sz(1) sz(2) 1 sz(3)]);
-        I = imtile(imresize(mat2gray(act1),[48 48]));
-    end
-    imshow(I)
-    name = net.Layers(i).Name;
-    title_str = sprintf('layer%d_%s_Features',i,name);
-    title(['Layer ',name,' Features'])
-    saveas(fig_conv(i+2),strcat(title_str,'_1000.jpg'));
-    saveas(fig_conv(i+2),strcat(title_str,'_1000.fig'));
-    i = i +1;
-end
+fig_conv(2) = figure(4)
+act1 = permute(sigmoid_1,[2 3 1]);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'sigmoid_1';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(2),strcat('sigmoid_1layer.jpg'));
+saveas(fig_conv(2),strcat('sigmoid_1layer.fig'));
 
+fig_conv(3) = figure(5)
+act1 = permute(S1_layer,[2 3 1]);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'pooling 1';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(3),strcat('pooling_1layer.jpg'));
+saveas(fig_conv(3),strcat('pooling_1layer.fig'));
+
+fig_conv(4) = figure(6)
+tmp = (squeeze(conv_2(:,1,:,:)));
+act1 = permute(tmp,[2 3 1]);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'conv 2';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(4),strcat('conv_2_layer.jpg'));
+saveas(fig_conv(4),strcat('conv_2_layer.fig'));
+
+fig_conv(5) = figure(7)
+tmp = (squeeze(sigmoid_2(:,1,:,:)));
+act1 = permute(tmp,[2 3 1]);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'sigmoid 2';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(5),strcat('sigmoid_2_layer.jpg'));
+saveas(fig_conv(5),strcat('sigmoid_2_layer.fig'));
+
+fig_conv(6) = figure(8)
+act1 = permute(S2_layer,[2 3 1]);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'pooling 2';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(6),strcat('pooling_2_layer.jpg'));
+saveas(fig_conv(6),strcat('pooling_2_layer.fig'));
+
+fig_conv(7) = figure(9)
+act1 = reshape(FC_layer,1,1,10);
+I = imtile(imresize(mat2gray(act1),[48 48]));
+imshow(I)
+title_str = 'FC layer';
+title(title_str,'FontSize',10)                    % show the label
+saveas(fig_conv(7),strcat('FC_layer.jpg'));
+saveas(fig_conv(7),strcat('FC_layer.fig'));
+
+fig_acc_iter = figure(10)
+plot(iter_r,acc_r);
+title('accuracy vs iteration', 'FontSize', 10)
+saveas(fig_acc_iter,strcat('acc_iter.jpg'));
+saveas(fig_acc_iter,strcat('acc_iter.fig'));
+
+fig_loss_iter = figure(11)
+plot(iter_r,loss_r);
+title('loss vs iteration', 'FontSize', 10)
+saveas(fig_loss_iter,strcat('loss_iter.jpg'));
+saveas(fig_loss_iter,strcat('loss_iter.fig'));
+
+fig_acc_time = figure(12)
+plot(timee_r, acc_r);
+title('accuracy vs cpu time', 'FontSize', 10)
+saveas(fig_acc_time,strcat('acc_time.jpg'));
+saveas(fig_acc_time,strcat('acc_time.fig'));
+
+fig_loss_time = figure(13)
+plot(time_r,loss_r);
+title('loss vs cpu time', 'FontSize', 10)
+saveas(fig_loss_time,strcat('loss_time.jpg'));
+saveas(fig_loss_time,strcat('loss_time.fig'));
