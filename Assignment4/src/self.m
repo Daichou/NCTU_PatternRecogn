@@ -13,8 +13,8 @@ tsInput = tsInput(:,:,:,1:1000);
 trDes = trDes(1:1000);
 tsDes = tsDes(1:1000);
 
-learning_rate = 0.4;
-iteration = 30;
+learning_rate = 0.7;
+iteration = 50;
 
 layer1_filter_num = 6;
 layer2_filter_num = 12;
@@ -385,7 +385,7 @@ saveas(fig_loss_iter,strcat('loss_iter.jpg'));
 saveas(fig_loss_iter,strcat('loss_iter.fig'));
 
 fig_acc_time = figure(12)
-plot(timee_r, acc_r);
+plot(time_r, acc_r);
 title('accuracy vs cpu time', 'FontSize', 10)
 saveas(fig_acc_time,strcat('acc_time.jpg'));
 saveas(fig_acc_time,strcat('acc_time.fig'));
