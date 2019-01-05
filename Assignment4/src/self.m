@@ -13,7 +13,7 @@ tsInput = tsInput(:,:,:,1:1000);
 trDes = trDes(1:1000);
 tsDes = tsDes(1:1000);
 
-learning_rate = 0.1;
+learning_rate = 0.005;
 
 layer1_filter_num = 6;
 layer2_filter_num = 12;
@@ -58,6 +58,7 @@ init_time = cputime;
 
 for iter=1:10
     Loss = 0;
+    Correctness = 0;
     for number_of_input=1:1000
         input_image = squeeze(trInput(:,:,:,number_of_input));
         input_label = trDes(number_of_input);
@@ -71,8 +72,17 @@ for iter=1:10
         end
         % max pooling
         for l1_N=1:layer1_filter_num
-            tmp = conv2(squeeze(sigmoid_1(l1_N,:,:)),ones(2)/conv_1_size^2, 'valid');
-            S1_layer(l1_N,:,:) = tmp(1:2:end,1:2:end);
+            %tmp = conv2(squeeze(sigmoid_1(l1_N,:,:)),ones(2)/conv_1_size^2, 'valid');
+            %S1_layer(l1_N,:,:) = tmp(1:2:end,1:2:end);
+            tmp = squeeze(sigmoid_1(l1_N,:,:));
+            for i = 1:pool_1_size
+                max_val = -1;
+                for j = 1:pool_1_size
+                    iv = (i-1)*2 + 1;
+                    jv = (j-1)*2 + 1;
+                    S1_layer(l1_N,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+                end
+            end
         end
 
         for l2_N=1:layer2_filter_num
@@ -85,8 +95,17 @@ for iter=1:10
         end
         % max pooling
         for l2_N=1:layer2_filter_num
-            tmp = conv2(squeeze(sigmoid_2(l2_N,:,:)),ones(2)/conv_2_size^2, 'valid');
-            S2_layer(l2_N,:,:) = tmp(1:2:end,1:2:end);
+            %tmp = conv2(squeeze(sigmoid_2(l2_N,:,:)),ones(2)/conv_2_size^2, 'valid');
+            %S2_layer(l2_N,:,:) = tmp(1:2:end,1:2:end);
+            tmp = squeeze(sigmoid_2(l2_N,:,:));
+            for i = 1:pool_2_size
+                max_val = -1;
+                for j = 1:pool_2_size
+                    iv = (i-1)*2 + 1;
+                    jv = (j-1)*2 + 1;
+                    S2_layer(l1_N,i,j) = max(max(max(tmp(iv,jv),tmp(iv,jv+1)),tmp(iv+1,jv)),tmp(iv+1,jv+1));
+                end
+            end
         end
 
         %vectorization
@@ -101,7 +120,12 @@ for iter=1:10
         Loss_list = (FC_layer - y_one_hot);
 
         Loss = Loss + (FC_layer - y_one_hot)'*(FC_layer - y_one_hot)/2;
-
+        %FC_layer
+        %y_one_hot
+        [M,I] = max(FC_layer);
+        if (I-1 == input_label)
+            Correctness = Correctness + 1;
+        end
         % back propagation
         delta_y = (FC_layer - y_one_hot).*deSigmoid(FC_layer);
         delta_W = delta_y.* (fv.');
@@ -113,16 +137,16 @@ for iter=1:10
             delta_S2(l2_N,:,:) = reshape(delta_f((l2_N - 1)*p2_square+1 : l2_N*p2_square,:),pool_2_size,pool_2_size);
         end
         %pooling recover
-        for l2_N=1:layer2_filter_num
+        for q=1:layer2_filter_num
             for i=1:conv_2_size
                 for j=1:conv_2_size
-                    delta_C2(l2_N,i,j) = (1/4)*delta_S2(ceil(i/2),ceil(j/2));
+                    delta_C2(q,i,j) = (1/4)*delta_S2(ceil(i/2),ceil(j/2));
                 end
             end
         end
 
-        for l2_N=1:layer2_filter_num
-            delta_C2_sig(l2_N,:,:) = delta_C2(l2_N,:,:).* deSigmoid(sigmoid_2(l2_N,:,:));
+        for q=1:layer2_filter_num
+            delta_C2_sig(q,:,:) = delta_C2(q,:,:).* deSigmoid(sigmoid_2(q,:,:));
         end
         for p=1:layer1_filter_num
             % z = zeros(filter_size,filter_size);
@@ -182,7 +206,8 @@ for iter=1:10
     end
     ite(iter) = iter;
     Loss_r(iter) = Loss/1000;
-    fprintf("Epochs: %d, Loss = %d",iter,Loss)
+    acc_r(iter) = Correctness/1000;
+    fprintf("Epochs: %d, Loss = %f, acc = %f\n",iter,Loss,acc_r(iter))
     time_r(iter) = cputime-init_time;
 end
 
